@@ -1,9 +1,12 @@
 import {createFileRoute} from '@tanstack/react-router'
+import React from "react";
 
 export const Route = createFileRoute('/problems/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div className="p-2">Hello "/problems/"!</div>
+  return (
+      <React.Fragment></React.Fragment>
+  )
 }
