@@ -1,66 +1,123 @@
-import {Icon} from "../ui/Icon";
+import { useState } from "react";
+import { LessonContent } from "./LessonContent";
+import { ChatMessage } from "./ChatMessage";
+import { ChatInput } from "./ChatInput";
+
+// Sample chat messages for demonstration
+const initialMessages = [
+	{
+		id: 1,
+		isAI: true,
+		message:
+			"주어진 2D 행렬에 대해서 설명에서 오른쪽으로 위에서 아래로 누적 합을 구한 결과 지점별 배열을 추가로 구성한 뒤 특정 구간의 사각형 내부의 합을 O(1)으로 구할 수 있을 것 같습니다.",
+		timestamp: "12:44 AM",
+	},
+];
 
 export function UnderstandingCheck() {
-  return (
-    <aside className="lg:w-2/5 h-[calc(100vh-180px)]" aria-labelledby="understanding-check-title">
-      <div className="flex flex-col h-full">
-        <header className="p-4 border-b border-[#eaeaea] bg-white">
-          <div className="flex items-center justify-between">
-            <h2 id="understanding-check-title" className="text-lg font-medium text-[#333]">Discussion</h2>
-            <button 
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 text-xs text-[#c28b3b]"
-              aria-label="Skip to lesson"
-            >
-              Skip to Lesson
-            </button>
-          </div>
-          <div className="flex items-center mt-2" aria-live="polite">
-            <span className="h-2 w-2 rounded-full bg-green-500 mr-2" aria-hidden="true"></span>
-            <span className="text-xs text-[#666]">Questions remaining: 1</span>
-          </div>
-        </header>
+	const [showLesson, setShowLesson] = useState(false);
+	const [messages, setMessages] = useState(initialMessages);
 
-        <section 
-          className="flex-1 overflow-y-auto p-4 bg-[#f8f8f6]"
-          aria-label="Chat conversation"
-        >
-          <ol className="list-none p-0 m-0 space-y-4">
-            <li className="mb-4 pr-4">
-              <article className="flex flex-col">
-                <header className="flex items-start mb-1">
-                  <span className="h-8 w-8 rounded-full bg-[#c28b3b] flex items-center justify-center text-white mr-2" aria-hidden="true">🧙‍♂️</span>
-                  <time className="text-xs text-[#888] mt-2">12:44 AM</time>
-                </header>
-                <div className="rounded-lg p-4 bg-black text-white ml-10">
-                  <p className="text-sm">주어진 2D 행렬에 대해서 설명에서 오른쪽으로 위에서 아래로 누적 합을 구한 결과 지점별 배열을 추가로 구성한 뒤 특정 구간의 사각형 내부의 합을 O(1)으로 구할 수 있을 것 같습니다.</p>
-                </div>
-              </article>
-            </li>
-          </ol>
-        </section>
+	const handleSkipToLesson = () => {
+		setShowLesson(true);
+	};
 
-        <footer className="p-4 border-t border-[#eaeaea] bg-white">
-          <form className="flex items-center" onSubmit={(e) => e.preventDefault()}>
-            <label htmlFor="message-input" className="sr-only">Type your message</label>
-            <textarea 
-              id="message-input"
-              placeholder="Type your message here..." 
-              className="flex-1 resize-none border border-[#e0e0e0] rounded-lg p-3 focus:outline-none focus:ring-1 focus:ring-[#c28b3b] focus:border-[#c28b3b] min-h-[60px]"
-              aria-label="Type your message"
-            ></textarea>
-            <button 
-              type="submit"
-              className="gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground ml-2 h-10 w-10 rounded-full bg-[#c28b3b] hover:bg-[#a67a2e] p-0 flex items-center justify-center"
-              aria-label="Send message"
-            >
-              <Icon id="send" title="Send message" className="h-5 w-5 text-white">
-                <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"></path>
-                <path d="m21.854 2.147-10.94 10.939"></path>
-              </Icon>
-            </button>
-          </form>
-        </footer>
-      </div>
-    </aside>
-  );
+	const handleCloseLesson = () => {
+		setShowLesson(false);
+	};
+
+	const handleSendMessage = (message: string) => {
+		// Add user message
+		const userMessage = {
+			id: messages.length + 1,
+			isAI: false,
+			message,
+			timestamp: new Date().toLocaleTimeString([], {
+				hour: "2-digit",
+				minute: "2-digit",
+			}),
+		};
+
+		setMessages([...messages, userMessage]);
+
+		// In a real app, you would send the message to an API and get a response
+		// For now, we'll just simulate an AI response after a short delay
+		setTimeout(() => {
+			const aiMessage = {
+				id: messages.length + 2,
+				isAI: true,
+				message:
+					"이 접근 방식이 맞습니다. 2D 누적 합(prefix sum)을 미리 계산해두면 sumRegion 쿼리를 O(1) 시간에 처리할 수 있습니다.",
+				timestamp: new Date().toLocaleTimeString([], {
+					hour: "2-digit",
+					minute: "2-digit",
+				}),
+			};
+			setMessages((prev) => [...prev, aiMessage]);
+		}, 1000);
+	};
+
+	return (
+		<aside
+			className="lg:w-2/5 h-[calc(100vh-180px)]"
+			aria-labelledby="understanding-check-title"
+		>
+			{showLesson ? (
+				<LessonContent onClose={handleCloseLesson} />
+			) : (
+				<div className="flex flex-col h-full">
+					<header className="p-4 border-b border-[#eaeaea] bg-white">
+						<div className="flex items-center justify-between">
+							<h2
+								id="understanding-check-title"
+								className="text-lg font-medium text-[#333]"
+							>
+								Discussion
+							</h2>
+							<button
+								className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-[#f8f3e7] hover:text-[#a67a2e] active:bg-[#e6d7b8] active:text-[#8a6626] h-9 rounded-md px-3 text-xs text-[#c28b3b]"
+								aria-label="Skip to lesson"
+								onClick={handleSkipToLesson}
+							>
+								Skip to Lesson
+							</button>
+						</div>
+						<div
+							className="flex items-center mt-2"
+							aria-live="polite"
+							role="status"
+						>
+							<span
+								className="h-2 w-2 rounded-full bg-green-500 mr-2"
+								aria-hidden="true"
+							></span>
+							<span className="text-xs text-[#666]">
+								Questions remaining: 1
+							</span>
+						</div>
+					</header>
+
+					<section
+						className="flex-1 overflow-y-auto p-4 bg-[#f8f8f6]"
+						aria-label="Chat conversation"
+					>
+						<ol className="list-none p-0 m-0 space-y-4">
+							{messages.map((message) => (
+								<ChatMessage
+									key={message.id}
+									isAI={message.isAI}
+									message={message.message}
+									timestamp={message.timestamp}
+								/>
+							))}
+						</ol>
+					</section>
+
+					<footer className="p-4 border-t border-[#eaeaea] bg-white">
+						<ChatInput onSendMessage={handleSendMessage} />
+					</footer>
+				</div>
+			)}
+		</aside>
+	);
 }
