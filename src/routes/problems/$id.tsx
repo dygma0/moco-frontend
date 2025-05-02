@@ -3,6 +3,7 @@ import { ProblemDetail } from "../../components/problems/types";
 import { BackNavigation } from "../../components/problems/BackNavigation";
 import { ProblemDescription } from "../../components/problems/ProblemDescription";
 import { UnderstandingCheck } from "../../components/problems/UnderstandingCheck";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/problems/$id")({
   component: ProblemDetailPage,
@@ -10,6 +11,14 @@ export const Route = createFileRoute("/problems/$id")({
 
 function ProblemDetailPage() {
   const { id } = Route.useParams();
+
+  // Update document title when component mounts
+  useEffect(() => {
+    document.title = `Problem ${id} - Two Sum | Quibe`;
+    return () => {
+      document.title = "Quibe";
+    };
+  }, [id]);
 
   // Mock data for the problem detail
   const problem: ProblemDetail = {
@@ -52,15 +61,20 @@ function ProblemDetailPage() {
   };
 
   return (
-    <div className="flex-1 p-6 overflow-auto">
+    <main className="flex-1 p-6 overflow-auto" aria-labelledby="problem-title">
       <div className="max-w-[1200px] mx-auto">
+        {/* Skip link for keyboard users */}
+        <a href="#problem-content" className="sr-only focus:not-sr-only focus:absolute focus:p-2 focus:bg-white focus:z-10">
+          Skip to problem content
+        </a>
+
         <BackNavigation href="/problems" text="Back to Problems" />
 
-        <div className="flex flex-col lg:flex-row bg-white rounded-lg shadow-sm overflow-hidden">
+        <article id="problem-content" className="flex flex-col lg:flex-row bg-white rounded-lg shadow-sm overflow-hidden">
           <ProblemDescription problem={problem} />
           <UnderstandingCheck />
-        </div>
+        </article>
       </div>
-    </div>
+    </main>
   );
 }

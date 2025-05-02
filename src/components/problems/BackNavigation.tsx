@@ -7,14 +7,18 @@ interface BackNavigationProps {
 
 export function BackNavigation({ href, text }: BackNavigationProps) {
   return (
-    <div className="mb-6">
-      <a className="inline-flex items-center text-sm text-[#666] hover:text-[#c28b3b]" href={href}>
+    <nav className="mb-6" aria-label="Back navigation">
+      <a 
+        className="inline-flex items-center text-sm text-[#666] hover:text-[#c28b3b]" 
+        href={href}
+        aria-label={`Navigate back to ${text}`}
+      >
         <Icon id="backArrow" title="Back Arrow" className="h-4 w-4 mr-1">
           <path d="m12 19-7-7 7-7"></path>
           <path d="M19 12H5"></path>
         </Icon>
-        {text}
+        <span>{text}</span>
       </a>
-    </div>
+    </nav>
   );
 }
