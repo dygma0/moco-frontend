@@ -3,6 +3,7 @@ import type { ProblemDetail } from "../../components/problems/types";
 import { BackNavigation } from "../../components/problems/BackNavigation";
 import { ProblemDescription } from "../../components/problems/ProblemDescription";
 import { UnderstandingCheck } from "../../components/problems/UnderstandingCheck";
+import { ProblemNotFound } from "../../components/problems/ProblemNotFound";
 import { useEffect } from "react";
 import { useChallenge } from "../../api/hooks/useChallenge";
 import { mapChallengeToProblemDetail } from "../../api/mappers/challengeMapper";
@@ -49,23 +50,7 @@ function ProblemDetailPage() {
 					</div>
 				)}
 
-				{isError && (
-					<div className="bg-white rounded-lg shadow-sm p-6 text-center">
-						<h2 className="text-xl font-medium text-red-600 mb-2">
-							Error Loading Problem
-						</h2>
-						<p className="text-[#666]">
-							{error?.message || "An unknown error occurred"}
-						</p>
-						<button
-							type="button"
-							onClick={() => window.location.reload()}
-							className="mt-4 px-4 py-2 bg-[#c28b3b] text-white rounded-md hover:bg-[#b27a2a]"
-						>
-							Try Again
-						</button>
-					</div>
-				)}
+				{isError && <ProblemNotFound />}
 
 				{!isLoading && !isError && problem && (
 					<article
