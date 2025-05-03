@@ -1,4 +1,9 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import {
+	createRootRoute,
+	Link,
+	Outlet,
+	useRouterState,
+} from "@tanstack/react-router";
 import { Sidebar } from "../components/Sidebar";
 import { NotFoundPage } from "../components/NotFoundPage";
 
@@ -8,13 +13,18 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
-	return (
-		<div className="flex h-screen bg-[#f8f8f6]">
-			{/* Sidebar */}
-			<Sidebar />
+	const pathname = useRouterState({ select: (s) => s.location.pathname });
+	const isLoginPage = pathname === "/login";
 
-			{/* Main content */}
-			<div className="flex-1 overflow-auto">
+	return (
+		<div
+			className={`min-h-screen ${isLoginPage ? "bg-white" : "flex bg-[#f8f8f6]"}`}
+		>
+			{!isLoginPage && <Sidebar />}
+
+			<div
+				className={`${isLoginPage ? "w-full h-screen" : "flex-1 overflow-auto"}`}
+			>
 				<Outlet />
 			</div>
 		</div>

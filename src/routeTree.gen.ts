@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as ProblemsIndexImport } from './routes/problems/index'
+import { Route as LoginIndexImport } from './routes/login/index'
 import { Route as ProblemsIdImport } from './routes/problems/$id'
 
 // Create/Update Routes
@@ -19,6 +20,12 @@ import { Route as ProblemsIdImport } from './routes/problems/$id'
 const ProblemsIndexRoute = ProblemsIndexImport.update({
   id: '/problems/',
   path: '/problems/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LoginIndexRoute = LoginIndexImport.update({
+  id: '/login/',
+  path: '/login/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,6 +46,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProblemsIdImport
       parentRoute: typeof rootRoute
     }
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/problems/': {
       id: '/problems/'
       path: '/problems'
@@ -53,36 +67,41 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/problems/$id': typeof ProblemsIdRoute
+  '/login': typeof LoginIndexRoute
   '/problems': typeof ProblemsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/problems/$id': typeof ProblemsIdRoute
+  '/login': typeof LoginIndexRoute
   '/problems': typeof ProblemsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/problems/$id': typeof ProblemsIdRoute
+  '/login/': typeof LoginIndexRoute
   '/problems/': typeof ProblemsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/problems/$id' | '/problems'
+  fullPaths: '/problems/$id' | '/login' | '/problems'
   fileRoutesByTo: FileRoutesByTo
-  to: '/problems/$id' | '/problems'
-  id: '__root__' | '/problems/$id' | '/problems/'
+  to: '/problems/$id' | '/login' | '/problems'
+  id: '__root__' | '/problems/$id' | '/login/' | '/problems/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   ProblemsIdRoute: typeof ProblemsIdRoute
+  LoginIndexRoute: typeof LoginIndexRoute
   ProblemsIndexRoute: typeof ProblemsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   ProblemsIdRoute: ProblemsIdRoute,
+  LoginIndexRoute: LoginIndexRoute,
   ProblemsIndexRoute: ProblemsIndexRoute,
 }
 
@@ -97,11 +116,15 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/problems/$id",
+        "/login/",
         "/problems/"
       ]
     },
     "/problems/$id": {
       "filePath": "problems/$id.tsx"
+    },
+    "/login/": {
+      "filePath": "login/index.tsx"
     },
     "/problems/": {
       "filePath": "problems/index.tsx"
