@@ -11,8 +11,13 @@ interface ProblemDescriptionProps {
 
 export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 	const [activeTab, setActiveTab] = useState("description");
+	const [showHints, setShowHints] = useState(false);
 	const tabId = "problem-description-tab";
 	const panelId = "problem-description-panel";
+
+	const toggleHints = () => {
+		setShowHints(prev => !prev);
+	};
 
 	return (
 		<section
@@ -49,7 +54,7 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 						<div
 							role="tablist"
 							aria-orientation="horizontal"
-							className="inline-flex items-center rounded-md text-muted-foreground bg-transparent w-full justify-start h-auto p-0"
+							className="rounded-md text-muted-foreground bg-transparent w-full justify-start h-auto p-0 flex items-center"
 						>
 							<button
 								type="button"
@@ -72,6 +77,35 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 									Description
 								</span>
 							</button>
+							<div className="ml-auto">
+								<button 
+									className="flex items-center gap-1 py-2 px-3 rounded-md text-sm font-medium text-[#c28b3b] hover:bg-[#f8f8f6]"
+									onClick={toggleHints}
+									aria-pressed={showHints}
+									aria-label={showHints ? "Hide hints" : "Show hints"}
+								>
+									<Icon
+										id="eyeIcon"
+										title={showHints ? "Hide hints" : "Show hints"}
+										className="h-4 w-4 mr-1"
+									>
+										{showHints ? (
+											<>
+												<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
+												<circle cx="12" cy="12" r="3"></circle>
+											</>
+										) : (
+											<>
+												<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"></path>
+												<path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"></path>
+												<path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"></path>
+												<path d="m2 2 20 20"></path>
+											</>
+										)}
+									</Icon>
+									{showHints ? "Hide Hints" : "Show Hints"}
+								</button>
+							</div>
 						</div>
 					</nav>
 				</header>
@@ -114,8 +148,8 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 									items={problem.constraints}
 								/>
 
-								{problem.hints && (
-									<ProblemListSection
+								{problem.hints && showHints && (
+									<ProblemListSection 
 										id="hints-heading"
 										title="Hints"
 										items={problem.hints}
