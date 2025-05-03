@@ -1,6 +1,5 @@
 import {
 	createRootRoute,
-	Link,
 	Outlet,
 	useRouterState,
 } from "@tanstack/react-router";
@@ -13,18 +12,16 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
-	const pathname = useRouterState({ select: (s) => s.location.pathname });
-	const isLoginPage = pathname === "/login";
+	const { location } = useRouterState();
+	const showSidebar = !["/login", "/signup"].includes(location.pathname);
 
 	return (
 		<div
-			className={`min-h-screen ${isLoginPage ? "bg-white" : "flex bg-[#f8f8f6]"}`}
+			className={`min-h-screen ${showSidebar ? "flex bg-[#f8f8f6]" : "bg-white"}`}
 		>
-			{!isLoginPage && <Sidebar />}
+			{showSidebar && <Sidebar />}
 
-			<div
-				className={`${isLoginPage ? "w-full h-screen" : "flex-1 overflow-auto"}`}
-			>
+			<div className={`${!showSidebar ? "w-full" : "flex-1 overflow-auto"}`}>
 				<Outlet />
 			</div>
 		</div>
