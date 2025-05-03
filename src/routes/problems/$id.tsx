@@ -4,6 +4,7 @@ import { BackNavigation } from "../../components/problems/BackNavigation";
 import { ProblemDescription } from "../../components/problems/ProblemDescription";
 import { UnderstandingCheck } from "../../components/problems/UnderstandingCheck";
 import { ProblemNotFound } from "../../components/problems/ProblemNotFound";
+import { ProblemDescriptionSkeleton } from "../../components/problems/ProblemDescriptionSkeleton";
 import { useEffect } from "react";
 import { useChallenge } from "../../api/hooks/useChallenge";
 import { mapChallengeToProblemDetail } from "../../api/mappers/challengeMapper";
@@ -45,8 +46,12 @@ function ProblemDetailPage() {
 				<BackNavigation href="/problems" text="Back to Problems" />
 
 				{isLoading && (
-					<div className="flex justify-center items-center h-64">
-						<div className="h-8 w-8 animate-spin rounded-full border-4 border-[#c28b3b] border-t-transparent" />
+					<div className="flex flex-col lg:flex-row bg-white rounded-lg shadow-sm overflow-hidden">
+						<ProblemDescriptionSkeleton />
+						<div className="lg:w-2/5 h-[calc(100vh-180px)] p-6 bg-gray-50 animate-pulse">
+							<div className="h-8 w-3/4 bg-gray-200 rounded mb-4" />
+							<div className="h-40 bg-gray-200 rounded" />
+						</div>
 					</div>
 				)}
 
