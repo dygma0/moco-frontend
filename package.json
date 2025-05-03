@@ -9,6 +9,7 @@
     "preview": "rsbuild preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.75.1",
     "@tanstack/react-router": "^1.119.0",
     "@tanstack/react-router-devtools": "^1.119.1",
     "autoprefixer": "^10.4.21",
