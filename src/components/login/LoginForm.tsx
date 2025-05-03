@@ -1,17 +1,49 @@
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { Button } from "../../components/ui/Button";
-import { Icon } from "../../components/ui/Icon";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Button } from "../ui/Button.tsx";
+import { Icon } from "../ui/Icon.tsx";
+import { useSignin } from "../../api/hooks/useSignin";
+import { useAuthStore } from "../../api/auth/authStore";
 
 export function LoginForm() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
+
+	const navigate = useNavigate();
+	const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+	const signinMutation = useSignin();
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			navigate({ to: "/problems" });
+		}
+	}, [isAuthenticated, navigate]);
+
+	useEffect(() => {
+		if (signinMutation.isSuccess && signinMutation.data.success) {
+			navigate({ to: "/problems" });
+		}
+	}, [signinMutation.isSuccess, signinMutation.data, navigate]);
 
 	const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		// TODO: Implement actual login logic
-		console.log("Login attempt with:", { email, password });
+		setErrorMessage("");
+
+		signinMutation.mutate(
+			{ email, password },
+			{
+				onSuccess: (data) => {
+					if (!data.success) {
+						setErrorMessage(data.message || "로그인에 실패했습니다");
+					}
+				},
+				onError: (error) => {
+					setErrorMessage(error.message || "로그인 중 오류가 발생했습니다");
+				},
+			},
+		);
 	};
 
 	return (
@@ -94,9 +126,28 @@ export function LoginForm() {
 				</div>
 			</div>
 
+			{/* Error Message */}
+			{errorMessage && (
+				<p className="text-sm text-red-600 mt-1" aria-live="polite">
+					{errorMessage}
+				</p>
+			)}
+
 			{/* Login Button */}
-			<Button type="submit" variant="primary" size="lg" className="w-full h-12">
-				로그인
+			<Button
+				type="submit"
+				variant="primary"
+				size="lg"
+				className="w-full h-12"
+				disabled={signinMutation.isPending}
+			>
+				{signinMutation.isPending ? (
+					<div className="flex items-center justify-center">
+						<div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+					</div>
+				) : (
+					"로그인"
+				)}
 			</Button>
 		</form>
 	);

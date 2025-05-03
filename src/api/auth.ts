@@ -9,6 +9,26 @@ export interface SignupResponse {
   message?: string;
 }
 
+export interface SigninRequest {
+  email: string;
+  password: string;
+}
+
+export interface SigninResponse {
+  success: boolean;
+  message?: string;
+  accessToken?: string;
+  userId?: string;
+  name?: string;
+  email?: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
 const API_BASE_URL = 'https://api-quibe.otter.coffee/api';
 
 export const authApi = {
@@ -43,6 +63,41 @@ export const authApi = {
       throw new Error(errorMessage);
 
     } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'An unknown error occurred',
+      };
+    }
+  },
+
+  /**
+   * Sign in a user
+   * @param data - The signin data (email, password)
+   * @returns A promise that resolves to the signin response
+   */
+  signin: async (data: SigninRequest): Promise<SigninResponse> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/signin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': '*/*',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message || `Signin failed with status: ${response.status}`);
+      }
+
+      return {
+        success: true,
+        ...responseData,
+      };
+    } catch (error) {
+      console.error('Signin error:', error);
       return {
         success: false,
         message: error instanceof Error ? error.message : 'An unknown error occurred',
