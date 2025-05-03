@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Icon } from "../ui/Icon";
 import { Badge } from "../ui/Badge";
-import { ProblemDetail } from "./types";
+import type { ProblemDetail } from "./types";
 import { ProblemExample } from "./ProblemExample";
 import { ProblemSection, ProblemListSection } from "./ProblemSection";
 
@@ -16,7 +16,7 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 	const panelId = "problem-description-panel";
 
 	const toggleHints = () => {
-		setShowHints(prev => !prev);
+		setShowHints((prev) => !prev);
 	};
 
 	return (
@@ -32,7 +32,7 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 								id="problem-title"
 								className="text-xl font-medium text-[#333]"
 							>
-								{problem.id}. {problem.title}
+								{problem.title}
 							</h1>
 							<Badge
 								variant={
@@ -42,8 +42,7 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 											? "warning"
 											: "danger"
 								}
-								role="status"
-								ariaLabel={`Difficulty level: ${problem.difficulty}`}
+								aria-label={`Difficulty level: ${problem.difficulty}`}
 							>
 								{problem.difficulty}
 							</Badge>
@@ -71,14 +70,15 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 										title="Description"
 										className="h-4 w-4 mr-1"
 									>
-										<path d="M12 7v14"></path>
-										<path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path>
+										<path d="M12 7v14" />
+										<path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
 									</Icon>
 									Description
 								</span>
 							</button>
 							<div className="ml-auto">
-								<button 
+								<button
+									type="button"
 									className="flex items-center gap-1 py-2 px-3 rounded-md text-sm font-medium text-[#c28b3b] hover:bg-[#f8f8f6]"
 									onClick={toggleHints}
 									aria-pressed={showHints}
@@ -91,15 +91,15 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 									>
 										{showHints ? (
 											<>
-												<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
-												<circle cx="12" cy="12" r="3"></circle>
+												<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+												<circle cx="12" cy="12" r="3" />
 											</>
 										) : (
 											<>
-												<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"></path>
-												<path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"></path>
-												<path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"></path>
-												<path d="m2 2 20 20"></path>
+												<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
+												<path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+												<path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />
+												<path d="m2 2 20 20" />
 											</>
 										)}
 									</Icon>
@@ -115,7 +115,6 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 					role="tabpanel"
 					id={panelId}
 					aria-labelledby={tabId}
-					tabIndex={0}
 				>
 					<div className="prose max-w-none">
 						{activeTab === "description" && (
@@ -131,10 +130,10 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 									>
 										Examples
 									</h2>
-									{problem.examples.map((example, index) => (
+									{problem.examples.map((example) => (
 										<ProblemExample
-											key={index}
-											index={index}
+											key={`example-${example.input}-${example.output}`}
+											index={problem.examples.indexOf(example)}
 											input={example.input}
 											output={example.output}
 											explanation={example.explanation}
@@ -149,7 +148,7 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 								/>
 
 								{problem.hints && showHints && (
-									<ProblemListSection 
+									<ProblemListSection
 										id="hints-heading"
 										title="Hints"
 										items={problem.hints}
@@ -159,9 +158,9 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 								{problem.companies && problem.companies.length > 0 && (
 									<ProblemSection id="companies-heading" title="Companies">
 										<div className="flex flex-wrap gap-2">
-											{problem.companies.map((company, index) => (
+											{problem.companies.map((company) => (
 												<Badge
-													key={index}
+													key={company}
 													variant="primary"
 													ariaLabel={`Company: ${company}`}
 												>
@@ -179,19 +178,17 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 											title="Related Problems"
 										>
 											<ul className="space-y-1">
-												{problem.relatedProblems.map(
-													(relatedProblem, index) => (
-														<li key={index}>
-															<a
-																className="text-sm text-[#c28b3b] hover:underline"
-																href={`/problems/${relatedProblem.id}`}
-																aria-label={`Problem ${relatedProblem.id}: ${relatedProblem.title}`}
-															>
-																{relatedProblem.id}. {relatedProblem.title}
-															</a>
-														</li>
-													),
-												)}
+												{problem.relatedProblems.map((relatedProblem) => (
+													<li key={relatedProblem.id}>
+														<a
+															className="text-sm text-[#c28b3b] hover:underline"
+															href={`/problems/${relatedProblem.id}`}
+															aria-label={`Problem ${relatedProblem.id}: ${relatedProblem.title}`}
+														>
+															{relatedProblem.id}. {relatedProblem.title}
+														</a>
+													</li>
+												))}
 											</ul>
 										</ProblemSection>
 									)}

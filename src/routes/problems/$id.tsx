@@ -4,6 +4,8 @@ import { BackNavigation } from "../../components/problems/BackNavigation";
 import { ProblemDescription } from "../../components/problems/ProblemDescription";
 import { UnderstandingCheck } from "../../components/problems/UnderstandingCheck";
 import { useEffect } from "react";
+import { useChallenge } from "../../api/hooks/useChallenge";
+import { mapChallengeToProblemDetail } from "../../api/mappers/challengeMapper";
 
 export const Route = createFileRoute("/problems/$id")({
 	component: ProblemDetailPage,
@@ -11,55 +13,22 @@ export const Route = createFileRoute("/problems/$id")({
 
 function ProblemDetailPage() {
 	const { id } = Route.useParams();
+	const { data: challengeData, isLoading, isError, error } = useChallenge(id);
 
-	// Update document title when component mounts
+	const problem: ProblemDetail | undefined = challengeData
+		? mapChallengeToProblemDetail(challengeData)
+		: undefined;
+
 	useEffect(() => {
-		document.title = `Problem ${id} - Two Sum | Quibe`;
+		if (problem) {
+			document.title = `Problem ${id} - ${problem.title} | Quibe`;
+		} else {
+			document.title = `Problem ${id} | Quibe`;
+		}
 		return () => {
 			document.title = "Quibe";
 		};
-	}, [id]);
-
-	// Mock data for the problem detail
-	const problem: ProblemDetail = {
-		id: Number.parseInt(id),
-		title: "Two Sum",
-		difficulty: "Easy",
-		acceptance: "48.2%",
-		description:
-			"Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nYou can return the answer in any order.",
-		examples: [
-			{
-				input: "nums = [2,7,11,15], target = 9",
-				output: "[0,1]",
-				explanation: "Because nums[0] + nums[1] == 9, we return [0, 1].",
-			},
-			{
-				input: "nums = [3,2,4], target = 6",
-				output: "[1,2]",
-			},
-			{
-				input: "nums = [3,3], target = 6",
-				output: "[0,1]",
-			},
-		],
-		constraints: [
-			"2 <= nums.length <= 10^4",
-			"-10^9 <= nums[i] <= 10^9",
-			"-10^9 <= target <= 10^9",
-			"Only one valid answer exists.",
-		],
-		hints: [
-			"A really brute force way would be to search for all possible pairs of numbers but that would be too slow.",
-			"Try to use the fact that the complement of the number we need is already in the hash table.",
-		],
-		companies: ["Amazon", "Google", "Apple", "Microsoft"],
-		relatedProblems: [
-			{ id: 15, title: "3Sum" },
-			{ id: 18, title: "4Sum" },
-			{ id: 167, title: "Two Sum II - Input Array Is Sorted" },
-		],
-	};
+	}, [id, problem]);
 
 	return (
 		<main className="flex-1 p-6 overflow-auto" aria-labelledby="problem-title">
@@ -74,13 +43,39 @@ function ProblemDetailPage() {
 
 				<BackNavigation href="/problems" text="Back to Problems" />
 
-				<article
-					id="problem-content"
-					className="flex flex-col lg:flex-row bg-white rounded-lg shadow-sm overflow-hidden"
-				>
-					<ProblemDescription problem={problem} />
-					<UnderstandingCheck />
-				</article>
+				{isLoading && (
+					<div className="flex justify-center items-center h-64">
+						<div className="h-8 w-8 animate-spin rounded-full border-4 border-[#c28b3b] border-t-transparent" />
+					</div>
+				)}
+
+				{isError && (
+					<div className="bg-white rounded-lg shadow-sm p-6 text-center">
+						<h2 className="text-xl font-medium text-red-600 mb-2">
+							Error Loading Problem
+						</h2>
+						<p className="text-[#666]">
+							{error?.message || "An unknown error occurred"}
+						</p>
+						<button
+							type="button"
+							onClick={() => window.location.reload()}
+							className="mt-4 px-4 py-2 bg-[#c28b3b] text-white rounded-md hover:bg-[#b27a2a]"
+						>
+							Try Again
+						</button>
+					</div>
+				)}
+
+				{!isLoading && !isError && problem && (
+					<article
+						id="problem-content"
+						className="flex flex-col lg:flex-row bg-white rounded-lg shadow-sm overflow-hidden"
+					>
+						<ProblemDescription problem={problem} />
+						<UnderstandingCheck />
+					</article>
+				)}
 			</div>
 		</main>
 	);
