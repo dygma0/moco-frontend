@@ -1,6 +1,6 @@
-import {createRootRoute, Outlet} from "@tanstack/react-router";
-import {Sidebar} from "../components/Sidebar";
-import {NotFoundPage} from "../components/NotFoundPage";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { Sidebar } from "../components/Sidebar";
+import { NotFoundPage } from "../components/NotFoundPage";
 
 export const Route = createRootRoute({
 	component: RootComponent,
