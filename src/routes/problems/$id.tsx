@@ -55,14 +55,12 @@ function ProblemDetailPage() {
 					</div>
 				)}
 
-				{isError && <ProblemNotFound />}
-
-				{!isLoading && !isError && problem && (
+				{!isLoading && (
 					<article
 						id="problem-content"
 						className="flex flex-col lg:flex-row bg-white rounded-lg shadow-sm overflow-hidden"
 					>
-						<ProblemDescription problem={problem} />
+						<ProblemDescription problem={!isError ? problem : undefined} />
 						<UnderstandingCheck />
 					</article>
 				)}
