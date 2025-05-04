@@ -153,7 +153,7 @@ export const challengesApi = {
 						Accept: "application/json",
 						Authorization: `Bearer ${token}`,
 					},
-					body: JSON.stringify({ content: message }),
+					body: JSON.stringify({ message }),
 				},
 			);
 
