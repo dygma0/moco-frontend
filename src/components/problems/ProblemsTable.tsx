@@ -19,18 +19,35 @@ export function ProblemsTable({
 	itemsPerPage = 10,
 }: ProblemsTableProps) {
 	return (
-		<div className="bg-white rounded-lg shadow-sm mb-6">
+		<section
+			className="bg-white rounded-lg shadow-sm mb-6"
+			aria-labelledby="problems-table-title"
+		>
+			<h2 id="problems-table-title" className="sr-only">
+				Problems List
+			</h2>
 			<div className="overflow-x-auto">
-				<table className="w-full">
+				<table className="w-full" aria-label="Problems table">
+					<caption className="sr-only">
+						List of programming problems with their difficulty and tags
+					</caption>
 					<thead>
 						<tr className="border-b border-[#eaeaea] bg-[#f9fafb] text-xs text-[#666]">
-							<th className="px-4 py-3 text-left font-medium cursor-pointer">
+							<th
+								scope="col"
+								className="px-4 py-3 text-left font-medium cursor-pointer"
+							>
 								<div className="flex items-center">Title</div>
 							</th>
-							<th className="px-4 py-3 text-left font-medium cursor-pointer">
+							<th
+								scope="col"
+								className="px-4 py-3 text-left font-medium cursor-pointer"
+							>
 								<div className="flex items-center">Difficulty</div>
 							</th>
-							<th className="px-4 py-3 text-left font-medium">Tags</th>
+							<th scope="col" className="px-4 py-3 text-left font-medium">
+								Tags
+							</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -47,14 +64,16 @@ export function ProblemsTable({
 					</tbody>
 				</table>
 
-				<Pagination
-					currentPage={currentPage}
-					totalPages={totalPages}
-					totalItems={totalProblems}
-					itemsPerPage={itemsPerPage}
-					onPageChange={onPageChange}
-				/>
+				<nav aria-label="Problems pagination">
+					<Pagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						totalItems={totalProblems}
+						itemsPerPage={itemsPerPage}
+						onPageChange={onPageChange}
+					/>
+				</nav>
 			</div>
-		</div>
+		</section>
 	);
 }
