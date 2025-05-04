@@ -1,10 +1,15 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vs } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Icon } from "../ui/Icon";
 import { Badge } from "../ui/Badge";
 import type { ProblemDetail } from "./types";
 import { ProblemExample } from "./ProblemExample";
 import { ProblemListSection, ProblemSection } from "./ProblemSection";
 import searchOtter from "../../assets/search-otter.png";
+import type { CSSProperties } from "react";
 
 interface ProblemDescriptionProps {
 	problem?: ProblemDetail;
@@ -153,9 +158,47 @@ export function ProblemDescription({ problem }: ProblemDescriptionProps) {
 					<div className="prose max-w-none">
 						{activeTab === "description" && (
 							<article>
-								<p className="whitespace-pre-line text-[#666]">
-									{problem.description}
-								</p>
+								<div className="text-[#666] prose-p:whitespace-pre-line">
+									<ReactMarkdown
+										remarkPlugins={[remarkGfm]}
+										components={{
+											code({
+												node,
+												className,
+												children,
+												style: _,
+												ref,
+												...props
+											}) {
+												const match = /language-(\w+)/.exec(className || "");
+												return match ? (
+													<SyntaxHighlighter
+														style={{
+															...(vs as { [key: string]: CSSProperties }),
+															'pre[class*="language-"]': {
+																...vs['pre[class*="language-"]'],
+															},
+															'code[class*="language-"]': {
+																...vs['code[class*="language-"]'],
+															},
+														}}
+														language={match[1]}
+														PreTag="div"
+														{...props}
+													>
+														{String(children).replace(/\n$/, "")}
+													</SyntaxHighlighter>
+												) : (
+													<code className={className} {...props}>
+														{children}
+													</code>
+												);
+											},
+										}}
+									>
+										{problem.description}
+									</ReactMarkdown>
+								</div>
 
 								<section aria-labelledby="examples-heading" className="mt-6">
 									<h2
