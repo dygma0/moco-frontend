@@ -1,12 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import type { ProblemDetail } from "../../components/problems/types";
-import { BackNavigation } from "../../components/problems/BackNavigation";
-import { ProblemDescription } from "../../components/problems/ProblemDescription";
-import { UnderstandingCheck } from "../../components/problems/UnderstandingCheck";
-import { ProblemDescriptionSkeleton } from "../../components/problems/ProblemDescriptionSkeleton";
-import { useEffect } from "react";
-import { useChallenge } from "../../api/hooks/useChallenge";
-import { mapChallengeToProblemDetail } from "../../api/mappers/challengeMapper";
+import {createFileRoute} from "@tanstack/react-router";
+import type {ProblemDetail} from "../../components/problems/types";
+import {BackNavigation} from "../../components/problems/BackNavigation";
+import {ProblemDescription} from "../../components/problems/ProblemDescription";
+import {DiscussionChatBox} from "../../components/problems/DiscussionChatBox.tsx";
+import {ProblemDescriptionSkeleton} from "../../components/problems/ProblemDescriptionSkeleton";
+import {useEffect} from "react";
+import {useChallenge} from "../../api/hooks/useChallenge";
+import {mapChallengeToProblemDetail} from "../../api/mappers/challengeMapper";
 
 export const Route = createFileRoute("/problems/$id")({
 	component: ProblemDetailPage,
@@ -60,7 +60,7 @@ function ProblemDetailPage() {
 						className="flex flex-col lg:flex-row bg-white rounded-lg shadow-sm overflow-hidden"
 					>
 						<ProblemDescription problem={!isError ? problem : undefined} />
-						<UnderstandingCheck disabled={isError || !problem} />
+						<DiscussionChatBox disabled={isError || !problem} />
 					</article>
 				)}
 			</div>

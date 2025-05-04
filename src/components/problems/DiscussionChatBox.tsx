@@ -3,7 +3,6 @@ import { LessonContent } from "./LessonContent";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 
-// Sample chat messages for demonstration
 const initialMessages = [
 	{
 		id: 1,
@@ -18,7 +17,9 @@ interface UnderstandingCheckProps {
 	disabled?: boolean;
 }
 
-export function UnderstandingCheck({ disabled = false }: UnderstandingCheckProps) {
+export function DiscussionChatBox({
+	disabled = false,
+}: UnderstandingCheckProps) {
 	const [showLesson, setShowLesson] = useState(false);
 	const [messages, setMessages] = useState(initialMessages);
 
@@ -44,8 +45,6 @@ export function UnderstandingCheck({ disabled = false }: UnderstandingCheckProps
 
 		setMessages([...messages, userMessage]);
 
-		// In a real app, you would send the message to an API and get a response
-		// For now, we'll just simulate an AI response after a short delay
 		setTimeout(() => {
 			const aiMessage = {
 				id: messages.length + 2,
@@ -79,6 +78,7 @@ export function UnderstandingCheck({ disabled = false }: UnderstandingCheckProps
 								Discussion
 							</h2>
 							<button
+								type="button"
 								className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-[#f8f3e7] hover:text-[#a67a2e] active:bg-[#e6d7b8] active:text-[#8a6626] h-9 rounded-md px-3 text-xs text-[#c28b3b]"
 								aria-label="Skip to lesson"
 								onClick={handleSkipToLesson}
@@ -86,19 +86,15 @@ export function UnderstandingCheck({ disabled = false }: UnderstandingCheckProps
 								Skip to Lesson
 							</button>
 						</div>
-						<div
-							className="flex items-center mt-2"
-							aria-live="polite"
-							role="status"
-						>
+						<output className="flex items-center mt-2" aria-live="polite">
 							<span
 								className="h-2 w-2 rounded-full bg-green-500 mr-2"
 								aria-hidden="true"
-							></span>
+							/>
 							<span className="text-xs text-[#666]">
 								Questions remaining: 1
 							</span>
-						</div>
+						</output>
 					</header>
 
 					<section
