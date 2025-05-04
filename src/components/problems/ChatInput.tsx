@@ -48,11 +48,7 @@ export function ChatInput({
 						value={message}
 						onChange={(e) => setMessage(e.target.value)}
 						onKeyDown={handleKeyDown}
-						placeholder={
-							disabled
-								? "문제를 찾을 수 없어 채팅이 비활성화되었습니다"
-								: placeholder
-						}
+						placeholder={placeholder}
 						className="flex-1 resize-none border border-[#e0e0e0] rounded-lg p-3 focus:outline-none focus:ring-1 focus:ring-[#c28b3b] focus:border-[#c28b3b] min-h-[60px] text-sm"
 						disabled={disabled}
 						aria-describedby="message-input-help"

@@ -232,8 +232,8 @@ export function DiscussionChatBox({
 							}
 							placeholder={
 								chatSession?.remainingInteractions === 0
-									? "No more questions remaining"
-									: "Type your message here..."
+									? "남은 대화 횟수가 없습니다. 문제 해결이 어렵다면 학습하기 페이지로 이동해 주세요."
+									: "요구사항을 분석하고 접근 방식에 대해 물어보세요."
 							}
 						/>
 					</footer>
