@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../config/constants";
+
 export interface ChallengeResponse {
 	id: string;
 	title: string;
@@ -16,6 +18,23 @@ export interface ChallengeResponse {
 		explanation?: string;
 	}>;
 	constraints: string[];
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface ChatMessage {
+	content: string;
+	sender: "user" | "system";
+	timestamp: string;
+}
+
+export interface ChatSessionResponse {
+	sessionId: string;
+	challengeId: string;
+	userId: string;
+	messages: ChatMessage[];
+	understandingScore: number;
+	remainingInteractions: number;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -49,8 +68,6 @@ export interface ChallengesListResponse {
 	empty: boolean;
 }
 
-import { API_BASE_URL } from "../config/constants";
-
 export const challengesApi = {
 	/**
 	 * Get challenge details by ID
@@ -75,6 +92,80 @@ export const challengesApi = {
 			return await response.json();
 		} catch (error) {
 			console.error("Error fetching challenge:", error);
+			throw error;
+		}
+	},
+
+	/**
+	 * Get chat messages for a challenge
+	 * @param challengeId - The challenge ID
+	 * @param token - The authentication token
+	 * @returns A promise that resolves to the chat session
+	 */
+	getChatSession: async (
+		challengeId: string,
+		token: string,
+	): Promise<ChatSessionResponse> => {
+		try {
+			const response = await fetch(
+				`${API_BASE_URL}/challenges/${challengeId}/chats`,
+				{
+					method: "GET",
+					headers: {
+						Accept: "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				},
+			);
+
+			if (!response.ok) {
+				throw new Error(
+					`Failed to fetch chat session with status: ${response.status}`,
+				);
+			}
+
+			return await response.json();
+		} catch (error) {
+			console.error("Error fetching chat session:", error);
+			throw error;
+		}
+	},
+
+	/**
+	 * Send a message to the chat
+	 * @param challengeId - The challenge ID
+	 * @param message - The message to send
+	 * @param token - The authentication token
+	 * @returns A promise that resolves to the updated chat session
+	 */
+	sendChatMessage: async (
+		challengeId: string,
+		message: string,
+		token: string,
+	): Promise<ChatSessionResponse> => {
+		try {
+			const response = await fetch(
+				`${API_BASE_URL}/challenges/${challengeId}/chats`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Accept: "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+					body: JSON.stringify({ content: message }),
+				},
+			);
+
+			if (!response.ok) {
+				throw new Error(
+					`Failed to send chat message with status: ${response.status}`,
+				);
+			}
+
+			return await response.json();
+		} catch (error) {
+			console.error("Error sending chat message:", error);
 			throw error;
 		}
 	},
@@ -112,12 +203,15 @@ export const challengesApi = {
 				params.append("tag", tag);
 			}
 
-			const response = await fetch(`${API_BASE_URL}/challenges?${params.toString()}`, {
-				method: "GET",
-				headers: {
-					Accept: "application/json",
+			const response = await fetch(
+				`${API_BASE_URL}/challenges?${params.toString()}`,
+				{
+					method: "GET",
+					headers: {
+						Accept: "application/json",
+					},
 				},
-			});
+			);
 
 			if (!response.ok) {
 				throw new Error(

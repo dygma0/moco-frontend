@@ -1,27 +1,36 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LessonContent } from "./LessonContent";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
-
-const initialMessages = [
-	{
-		id: 1,
-		isAI: true,
-		message:
-			"주어진 2D 행렬에 대해서 설명에서 오른쪽으로 위에서 아래로 누적 합을 구한 결과 지점별 배열을 추가로 구성한 뒤 특정 구간의 사각형 내부의 합을 O(1)으로 구할 수 있을 것 같습니다.",
-		timestamp: "12:44 AM",
-	},
-];
+import { useChatSession } from "../../api/hooks/useChatSession";
 
 interface UnderstandingCheckProps {
+	challengeId: string;
 	disabled?: boolean;
 }
 
 export function DiscussionChatBox({
+	challengeId,
 	disabled = false,
 }: UnderstandingCheckProps) {
 	const [showLesson, setShowLesson] = useState(false);
-	const [messages, setMessages] = useState(initialMessages);
+	const {
+		data: chatSession,
+		isLoading,
+		isError,
+		error,
+		sendMessage,
+		isSending,
+	} = useChatSession(challengeId);
+
+	const chatContainerRef = useRef<HTMLElement>(null);
+
+	useEffect(() => {
+		if (chatContainerRef.current) {
+			chatContainerRef.current.scrollTop =
+				chatContainerRef.current.scrollHeight;
+		}
+	}, [chatSession]);
 
 	const handleSkipToLesson = () => {
 		setShowLesson(true);
@@ -32,33 +41,19 @@ export function DiscussionChatBox({
 	};
 
 	const handleSendMessage = (message: string) => {
-		// Add user message
-		const userMessage = {
-			id: messages.length + 1,
-			isAI: false,
-			message,
-			timestamp: new Date().toLocaleTimeString([], {
-				hour: "2-digit",
-				minute: "2-digit",
-			}),
-		};
+		if (chatSession?.remainingInteractions === 0) {
+			return;
+		}
 
-		setMessages([...messages, userMessage]);
-
-		setTimeout(() => {
-			const aiMessage = {
-				id: messages.length + 2,
-				isAI: true,
-				message:
-					"이 접근 방식이 맞습니다. 2D 누적 합(prefix sum)을 미리 계산해두면 sumRegion 쿼리를 O(1) 시간에 처리할 수 있습니다.",
-				timestamp: new Date().toLocaleTimeString([], {
-					hour: "2-digit",
-					minute: "2-digit",
-				}),
-			};
-			setMessages((prev) => [...prev, aiMessage]);
-		}, 1000);
+		sendMessage(message);
 	};
+
+	interface ChatMessageData {
+		id: string;
+		sender: string;
+		content: string;
+		timestamp: string;
+	}
 
 	return (
 		<aside
@@ -88,33 +83,71 @@ export function DiscussionChatBox({
 						</div>
 						<output className="flex items-center mt-2" aria-live="polite">
 							<span
-								className="h-2 w-2 rounded-full bg-green-500 mr-2"
+								className={`h-2 w-2 rounded-full ${chatSession?.remainingInteractions ? "bg-green-500" : "bg-red-500"} mr-2`}
 								aria-hidden="true"
 							/>
 							<span className="text-xs text-[#666]">
-								Questions remaining: 1
+								Questions remaining: {chatSession?.remainingInteractions ?? 0}
 							</span>
 						</output>
 					</header>
 
 					<section
+						ref={chatContainerRef}
 						className="flex-1 overflow-y-auto p-4 bg-[#f8f8f6]"
 						aria-label="Chat conversation"
 					>
-						<ol className="list-none p-0 m-0 space-y-4">
-							{messages.map((message) => (
-								<ChatMessage
-									key={message.id}
-									isAI={message.isAI}
-									message={message.message}
-									timestamp={message.timestamp}
-								/>
-							))}
-						</ol>
+						{isLoading && (
+							<div className="flex justify-center items-center h-full">
+								<p className="text-gray-500">Loading chat messages...</p>
+							</div>
+						)}
+
+						{isError && (
+							<div className="flex justify-center items-center h-full">
+								<p className="text-red-500">
+									Error loading chat messages. Please try again later.
+								</p>
+								<p className="text-sm text-gray-500 mt-2">
+									{error instanceof Error ? error.message : "Unknown error"}
+								</p>
+							</div>
+						)}
+
+						{!isLoading && !isError && chatSession && (
+							<ol className="list-none p-0 m-0 space-y-4">
+								{(chatSession.messages as ChatMessageData[]).map((message) => (
+									<ChatMessage
+										key={message.id ?? message.timestamp}
+										isAI={message.sender === "system"}
+										message={message.content}
+										timestamp={new Date(message.timestamp).toLocaleTimeString(
+											[],
+											{
+												hour: "2-digit",
+												minute: "2-digit",
+											},
+										)}
+									/>
+								))}
+							</ol>
+						)}
 					</section>
 
 					<footer className="p-4 border-t border-[#eaeaea] bg-white">
-						<ChatInput onSendMessage={handleSendMessage} disabled={disabled} />
+						<ChatInput
+							onSendMessage={handleSendMessage}
+							disabled={
+								disabled ||
+								isSending ||
+								chatSession?.remainingInteractions === 0
+							}
+							placeholder={
+								chatSession?.remainingInteractions === 0
+									? "No more questions remaining"
+									: "Type your message here..."
+							}
+						/>
 					</footer>
 				</div>
 			)}

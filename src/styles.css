@@ -1,1 +1,102 @@
 @import "tailwindcss";
+
+/* Markdown styling */
+.markdown-content {
+  /* General text styling */
+  @apply text-sm leading-relaxed;
+
+  /* Headings */
+  & h1 {
+    @apply text-xl font-bold mt-4 mb-2;
+  }
+  & h2 {
+    @apply text-lg font-bold mt-3 mb-2;
+  }
+  & h3 {
+    @apply text-base font-bold mt-3 mb-1;
+  }
+  & h4, & h5, & h6 {
+    @apply font-bold mt-2 mb-1;
+  }
+
+  /* Paragraphs and spacing */
+  & p {
+    @apply my-2;
+  }
+
+  /* Lists */
+  & ul, & ol {
+    @apply pl-5 my-2;
+  }
+  & ul {
+    @apply list-disc;
+  }
+  & ol {
+    @apply list-decimal;
+  }
+  & li {
+    @apply mb-1;
+  }
+
+  /* Inline code */
+  & code {
+    @apply font-mono text-xs bg-gray-100 text-gray-800 px-1 py-0.5 rounded;
+  }
+
+  /* Add margin to syntax highlighted code blocks */
+  & pre {
+    @apply my-3;
+  }
+
+  /* Blockquotes */
+  & blockquote {
+    @apply border-l-4 border-gray-300 pl-4 italic my-3;
+  }
+
+  /* Links */
+  & a {
+    @apply text-blue-600 hover:underline;
+  }
+
+  /* Tables */
+  & table {
+    @apply w-full border-collapse my-3;
+  }
+  & th, & td {
+    @apply border border-gray-300 px-2 py-1;
+  }
+  & th {
+    @apply bg-gray-100 font-semibold;
+  }
+
+  /* Horizontal rule */
+  & hr {
+    @apply my-4 border-t border-gray-300;
+  }
+}
+
+/* Dark mode for AI messages */
+.markdown-content-dark {
+  /* Inline code */
+  & code {
+    @apply bg-gray-700 text-gray-100;
+  }
+
+  /* Links */
+  & a {
+    @apply text-blue-400;
+  }
+
+  /* Tables */
+  & th {
+    @apply bg-gray-800 text-white border-gray-700;
+  }
+  & td {
+    @apply border-gray-700;
+  }
+
+  /* Blockquotes */
+  & blockquote {
+    @apply border-gray-600;
+  }
+}
