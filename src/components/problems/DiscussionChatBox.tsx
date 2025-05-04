@@ -22,9 +22,22 @@ function LoadingMessage() {
 					</span>
 					<time className="text-xs text-[#888] mt-2">{timestamp}</time>
 				</header>
-				<div className="rounded-lg p-4 ml-10 bg-black text-white">
-					<div className="flex items-center justify-center p-2">
-						<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+				<div className="rounded-lg p-4 ml-10">
+					<div className="flex items-start p-2">
+						<div className="flex space-x-1">
+							<div
+								className="w-2 h-2 bg-[#c28b3b] rounded-full animate-bounce"
+								style={{ animationDelay: "0ms" }}
+							/>
+							<div
+								className="w-2 h-2 bg-[#c28b3b] rounded-full animate-bounce"
+								style={{ animationDelay: "150ms" }}
+							/>
+							<div
+								className="w-2 h-2 bg-[#c28b3b] rounded-full animate-bounce"
+								style={{ animationDelay: "300ms" }}
+							/>
+						</div>
 					</div>
 				</div>
 			</article>
