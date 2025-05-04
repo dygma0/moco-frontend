@@ -4,9 +4,44 @@ import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { useChatSession } from "../../api/hooks/useChatSession";
 
+function LoadingMessage() {
+	const timestamp = new Date().toLocaleTimeString([], {
+		hour: "2-digit",
+		minute: "2-digit",
+	});
+
+	return (
+		<li className="mb-4 pr-4">
+			<article className="flex flex-col">
+				<header className="flex items-start mb-1">
+					<span
+						className="h-8 w-8 rounded-full bg-[#c28b3b] flex items-center justify-center text-white mr-2"
+						aria-hidden="true"
+					>
+						🧙‍♂️
+					</span>
+					<time className="text-xs text-[#888] mt-2">{timestamp}</time>
+				</header>
+				<div className="rounded-lg p-4 ml-10 bg-black text-white">
+					<div className="flex items-center justify-center p-2">
+						<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+					</div>
+				</div>
+			</article>
+		</li>
+	);
+}
+
 interface UnderstandingCheckProps {
 	challengeId: string;
 	disabled?: boolean;
+}
+
+interface ChatMessageData {
+	id: string;
+	sender: string;
+	content: string;
+	timestamp: string;
 }
 
 export function DiscussionChatBox({
@@ -14,6 +49,9 @@ export function DiscussionChatBox({
 	disabled = false,
 }: UnderstandingCheckProps) {
 	const [showLesson, setShowLesson] = useState(false);
+	const [pendingUserMessage, setPendingUserMessage] =
+		useState<ChatMessageData | null>(null);
+
 	const {
 		data: chatSession,
 		isLoading,
@@ -25,12 +63,28 @@ export function DiscussionChatBox({
 
 	const chatContainerRef = useRef<HTMLElement>(null);
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => {
 		if (chatContainerRef.current) {
 			chatContainerRef.current.scrollTop =
 				chatContainerRef.current.scrollHeight;
 		}
-	}, [chatSession]);
+	}, [chatSession?.messages.length, isSending]);
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	useEffect(() => {
+		if (pendingUserMessage && chatSession?.messages) {
+			const messageExists = chatSession.messages.some(
+				(msg) =>
+					msg.content === pendingUserMessage.content &&
+					msg.sender === pendingUserMessage.sender,
+			);
+
+			if (messageExists) {
+				setPendingUserMessage(null);
+			}
+		}
+	}, [chatSession?.messages, pendingUserMessage]);
 
 	const handleSkipToLesson = () => {
 		setShowLesson(true);
@@ -45,15 +99,17 @@ export function DiscussionChatBox({
 			return;
 		}
 
+		const tempUserMessage: ChatMessageData = {
+			id: `pending-${Date.now()}`,
+			sender: "user",
+			content: message,
+			timestamp: new Date().toISOString(),
+		};
+
+		setPendingUserMessage(tempUserMessage);
+
 		sendMessage(message);
 	};
-
-	interface ChatMessageData {
-		id: string;
-		sender: string;
-		content: string;
-		timestamp: string;
-	}
 
 	return (
 		<aside
@@ -130,6 +186,25 @@ export function DiscussionChatBox({
 										)}
 									/>
 								))}
+								{pendingUserMessage &&
+									!chatSession.messages.some(
+										(msg) =>
+											msg.content === pendingUserMessage.content &&
+											msg.sender === pendingUserMessage.sender,
+									) && (
+										<ChatMessage
+											key={pendingUserMessage.id}
+											isAI={false}
+											message={pendingUserMessage.content}
+											timestamp={new Date(
+												pendingUserMessage.timestamp,
+											).toLocaleTimeString([], {
+												hour: "2-digit",
+												minute: "2-digit",
+											})}
+										/>
+									)}
+								{isSending && <LoadingMessage key="loading-indicator" />}
 							</ol>
 						)}
 					</section>
