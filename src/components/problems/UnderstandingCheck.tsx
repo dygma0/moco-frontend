@@ -14,7 +14,11 @@ const initialMessages = [
 	},
 ];
 
-export function UnderstandingCheck() {
+interface UnderstandingCheckProps {
+	disabled?: boolean;
+}
+
+export function UnderstandingCheck({ disabled = false }: UnderstandingCheckProps) {
 	const [showLesson, setShowLesson] = useState(false);
 	const [messages, setMessages] = useState(initialMessages);
 
@@ -114,7 +118,7 @@ export function UnderstandingCheck() {
 					</section>
 
 					<footer className="p-4 border-t border-[#eaeaea] bg-white">
-						<ChatInput onSendMessage={handleSendMessage} />
+						<ChatInput onSendMessage={handleSendMessage} disabled={disabled} />
 					</footer>
 				</div>
 			)}

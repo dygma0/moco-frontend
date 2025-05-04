@@ -3,7 +3,6 @@ import type { ProblemDetail } from "../../components/problems/types";
 import { BackNavigation } from "../../components/problems/BackNavigation";
 import { ProblemDescription } from "../../components/problems/ProblemDescription";
 import { UnderstandingCheck } from "../../components/problems/UnderstandingCheck";
-import { ProblemNotFound } from "../../components/problems/ProblemNotFound";
 import { ProblemDescriptionSkeleton } from "../../components/problems/ProblemDescriptionSkeleton";
 import { useEffect } from "react";
 import { useChallenge } from "../../api/hooks/useChallenge";
@@ -61,7 +60,7 @@ function ProblemDetailPage() {
 						className="flex flex-col lg:flex-row bg-white rounded-lg shadow-sm overflow-hidden"
 					>
 						<ProblemDescription problem={!isError ? problem : undefined} />
-						<UnderstandingCheck />
+						<UnderstandingCheck disabled={isError || !problem} />
 					</article>
 				)}
 			</div>
