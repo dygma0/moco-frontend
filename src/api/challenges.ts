@@ -68,7 +68,87 @@ export interface ChallengesListResponse {
 	empty: boolean;
 }
 
+export interface LessonTextSection {
+	title: string;
+	type: "TEXT";
+	data: string;
+}
+
+export interface LessonGapFillSection {
+	title: string;
+	type: "GAP_FILL";
+	data: {
+		question: string;
+		displayTokens: Array<{
+			text: string;
+			isBlank: boolean;
+		}>;
+		choices: Array<{
+			text: string;
+			isCorrect: boolean;
+		}>;
+		correctOptionIndex: number;
+	};
+}
+
+export interface LessonImplementationSection {
+	title: string;
+	type: "IMPLEMENTATION";
+	data: {
+		title: string;
+		description: string;
+		codeSteps: Array<{
+			order: number;
+			code: string;
+			explanation: string;
+		}>;
+	};
+}
+
+export type LessonSection =
+	| LessonTextSection
+	| LessonGapFillSection
+	| LessonImplementationSection;
+
+export interface LessonResponse {
+	id: string;
+	challengeId: string;
+	sections: LessonSection[];
+	createdAt: string;
+	updatedAt: string;
+}
+
 export const challengesApi = {
+	/**
+	 * Get lessons for a challenge
+	 * @param challengeId - The challenge ID
+	 * @returns A promise that resolves to the lessons for the challenge
+	 */
+	getLessons: async (challengeId: string): Promise<LessonResponse[]> => {
+		try {
+			const response = await fetch(
+				`${API_BASE_URL}/lessons?challengeId=${challengeId}`,
+				{
+					method: "GET",
+					headers: {
+						Accept: "application/json",
+					},
+				},
+			);
+
+			if (!response.ok) {
+				throw new Error(
+					`Failed to fetch lessons with status: ${response.status}`,
+				);
+			}
+
+			return await response.json();
+		} catch (error) {
+			console.error("Error fetching lessons:", error);
+			throw error;
+		}
+	},
+
 	/**
 	 * Get challenge details by ID
 	 * @param id - The challenge ID

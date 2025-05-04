@@ -59,7 +59,7 @@ export function ChatMessage({ isAI, message, timestamp }: ChatMessageProps) {
 					<time className="text-xs text-[#888] mt-2">{timestamp}</time>
 				</header>
 				<div
-					className={`rounded-lg p-4 ml-10 ${isAI ? "bg-black text-white" : "bg-white text-[#333] border border-[#eaeaea]"}`}
+					className={`rounded-lg px-4 ml-10 ${isAI ? "bg-black text-white" : "bg-white text-[#333] border border-[#eaeaea]"}`}
 				>
 					<div
 						className={`markdown-content ${isAI ? "markdown-content-dark" : ""}`}

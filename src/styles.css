@@ -3,7 +3,7 @@
 /* Markdown styling */
 .markdown-content {
   /* General text styling */
-  @apply text-sm leading-relaxed;
+  @apply text-base leading-relaxed;
 
   /* Headings */
   & h1 {

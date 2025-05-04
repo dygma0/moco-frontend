@@ -130,7 +130,7 @@ export function DiscussionChatBox({
 			aria-labelledby="understanding-check-title"
 		>
 			{showLesson ? (
-				<LessonContent onClose={handleCloseLesson} />
+				<LessonContent onClose={handleCloseLesson} challengeId={challengeId} />
 			) : (
 				<div className="flex flex-col h-full">
 					<header className="p-4 border-b border-[#eaeaea] bg-white">

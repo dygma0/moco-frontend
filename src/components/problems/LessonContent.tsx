@@ -1,8 +1,14 @@
+import { useState, useEffect } from "react";
 import { Icon } from "../ui/Icon";
+import { useLessons } from "../../api/hooks/useLessons";
+import { TextContent } from "./lesson/TextContent";
+import { GapFillContent } from "./lesson/GapFillContent";
+import { ImplementationContent } from "./lesson/ImplementationContent";
+import type { LessonSection } from "../../api/challenges";
 
-// Define interfaces for the components
 interface LessonContentProps {
 	onClose: () => void;
+	challengeId?: string;
 }
 
 interface LessonSectionProps {
@@ -51,7 +57,7 @@ function LessonKeyPoints({ id, title, points }: LessonKeyPointsProps) {
 			<h3 id={id} className="text-lg font-medium text-[#c28b3b] mb-2">
 				{title}
 			</h3>
-			<ul className="list-disc pl-5 space-y-2 text-[#666]">
+			<ul className="list-disc pl-5 space-y-2 text-[#666] text-base">
 				{points.map((point, index) => (
 					<li key={index}>
 						<strong>{point.title}</strong> {point.description}
@@ -72,43 +78,68 @@ function LessonCodeExample({ id, title, code }: LessonCodeExampleProps) {
 			<h3 id={id} className="text-lg font-medium mb-2">
 				{title}
 			</h3>
-			<pre className="text-sm font-mono overflow-x-auto">{code}</pre>
+			<pre className="text-base font-mono overflow-x-auto">{code}</pre>
 		</section>
 	);
 }
 
-export function LessonContent({ onClose }: LessonContentProps) {
-	// Sample data for the lesson
-	const keyPoints = [
-		{
-			title: "전처리 접근법:",
-			description:
-				"행렬을 미리 처리하여 누적 합을 계산해 두면 나중에 쿼리를 빠르게 처리할 수 있습니다.",
-		},
-		{
-			title: "2D 누적 합:",
-			description:
-				"2차원 배열에서 누적 합을 효율적으로 계산하는 방법을 이해해야 합니다.",
-		},
-		{
-			title: "시간 복잡도:",
-			description:
-				"전처리는 O(m*n)이 소요되지만, 각 쿼리는 O(1)에 처리할 수 있습니다.",
-		},
-	];
+export function LessonContent({
+	onClose,
+	challengeId = "6810e04894294c605ee43018",
+}: LessonContentProps) {
+	const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
+	const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
 
-	const codeExample = `const matrix = [
-  [3, 0, 1, 4, 2],
-  [5, 6, 3, 2, 1],
-  [1, 2, 0, 1, 5],
-  [4, 1, 0, 1, 7],
-  [1, 0, 3, 0, 5]
-];
+	const { data: lessons, isLoading, isError, error } = useLessons(challengeId);
 
-const numMatrix = new NumMatrix(matrix);
-numMatrix.sumRegion(2, 1, 4, 3); // 8 반환 (영역: [[2,1],[3,1],[4,1],[2,2],[3,2],[4,2],[2,3],[3,3],[4,3]])
-numMatrix.sumRegion(1, 1, 2, 2); // 11 반환 (영역: [[1,1],[1,2],[2,1],[2,2]])
-numMatrix.sumRegion(1, 2, 2, 4); // 12 반환 (영역: [[1,2],[1,3],[1,4],[2,2],[2,3],[2,4]])`;
+	// Reset section index when lesson changes
+	useEffect(() => {
+		setCurrentSectionIndex(0);
+	}, [currentLessonIndex]);
+
+	const currentLesson =
+		lessons && lessons.length > 0 ? lessons[currentLessonIndex] : null;
+	const sections = currentLesson?.sections || [];
+	const currentSection =
+		sections.length > 0 ? sections[currentSectionIndex] : null;
+
+	const totalLessons = lessons?.length || 0;
+	const totalSections = sections.length;
+
+	const handleNextSection = () => {
+		if (currentSectionIndex < totalSections - 1) {
+			setCurrentSectionIndex(currentSectionIndex + 1);
+		} else if (currentLessonIndex < totalLessons - 1) {
+			setCurrentLessonIndex(currentLessonIndex + 1);
+		}
+	};
+
+	const handlePrevSection = () => {
+		if (currentSectionIndex > 0) {
+			setCurrentSectionIndex(currentSectionIndex - 1);
+		} else if (currentLessonIndex > 0) {
+			setCurrentLessonIndex(currentLessonIndex - 1);
+			// Set to the last section of the previous lesson
+			const prevLesson = lessons?.[currentLessonIndex - 1];
+			if (prevLesson) {
+				setCurrentSectionIndex(prevLesson.sections.length - 1);
+			}
+		}
+	};
+
+	// Render content based on section type
+	const renderSectionContent = (section: LessonSection) => {
+		switch (section.type) {
+			case "TEXT":
+				return <TextContent section={section} />;
+			case "GAP_FILL":
+				return <GapFillContent section={section} />;
+			case "IMPLEMENTATION":
+				return <ImplementationContent section={section} />;
+			default:
+				return <div>Unsupported section type</div>;
+		}
+	};
 
 	return (
 		<article className="flex flex-col h-full bg-white">
@@ -121,33 +152,32 @@ numMatrix.sumRegion(1, 2, 2, 4); // 12 반환 (영역: [[1,2],[1,3],[1,4],[2,2],
 							title="Lesson"
 							className="h-4 w-4 text-[#c28b3b]"
 						>
-							<path d="M12 7v14"></path>
-							<path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path>
+							<path d="M12 7v14" />
+							<path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
 						</Icon>
 					</div>
 					<div>
 						<h1 id="lesson-title" className="text-lg font-medium text-[#333]">
-							2. Two Sum - 문제 소개
+							{currentSection ? currentSection.title : "Loading..."}
 						</h1>
 						<div className="flex items-center gap-2 text-sm">
-							<span
-								className="text-green-600"
-								role="status"
-								aria-label="Difficulty level: Easy"
-							>
-								Easy
-							</span>
+							{!isLoading && currentLesson && (
+								<span className="text-[#666]">
+									Lesson {currentLessonIndex + 1} of {totalLessons}
+								</span>
+							)}
 						</div>
 					</div>
 				</div>
 				<button
+					type="button"
 					className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-[#f8f3e7] hover:text-[#a67a2e] active:bg-[#e6d7b8] active:text-[#8a6626] h-8 w-8"
 					onClick={onClose}
 					aria-label="Close lesson"
 				>
 					<Icon id="closeIcon" title="Close" className="h-4 w-4">
-						<path d="M18 6 6 18"></path>
-						<path d="m6 6 12 12"></path>
+						<path d="M18 6 6 18" />
+						<path d="m6 6 12 12" />
 					</Icon>
 				</button>
 			</header>
@@ -174,10 +204,10 @@ numMatrix.sumRegion(1, 2, 2, 4); // 12 반환 (영역: [[1,2],[1,3],[1,4],[2,2],
 									title="Lesson"
 									className="h-4 w-4 mr-1"
 								>
-									<path d="M12 7v14"></path>
-									<path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path>
+									<path d="M12 7v14" />
+									<path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
 								</Icon>
-								문제 소개
+								학습 자료
 							</span>
 						</button>
 					</div>
@@ -190,116 +220,80 @@ numMatrix.sumRegion(1, 2, 2, 4); // 12 반환 (영역: [[1,2],[1,3],[1,4],[2,2],
 				role="tabpanel"
 				id="lesson-content-panel"
 				aria-labelledby="lesson-content-tab"
-				tabIndex={0}
 			>
 				<div className="max-w-4xl mx-auto">
-					<LessonSection id="intro-heading" title="문제 소개">
-						<p className="text-[#666] mb-4">
-							이 문제는 주어진 2차원 행렬(matrix)에서 특정 직사각형 영역의 요소
-							합을 효율적으로 계산하는 클래스를 구현하는 것입니다. 핵심은 행렬이
-							불변 (immutable)하다는 점입니다. 즉, 한 번 생성된 행렬의 값은
-							변경되지 않습니다.
-						</p>
-						<p className="text-[#666] mb-4">
-							여러 번의{" "}
-							<code className="bg-[#f8f8f6] px-1 rounded">sumRegion</code>{" "}
-							쿼리가 주어질 때, 각 쿼리에 대해 지정된 범위 (왼쪽 위 모서리{" "}
-							<code className="bg-[#f8f8f6] px-1 rounded">(row1, col1)</code>{" "}
-							부터 오른쪽 아래 모서리{" "}
-							<code className="bg-[#f8f8f6] px-1 rounded">(row2, col2)</code>{" "}
-							까지) 내의 모든 요소의 합을 빠르게 반환해야 합니다.
-						</p>
-					</LessonSection>
+					{isLoading && (
+						<div className="flex justify-center items-center h-64">
+							<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c28b3b]" />
+						</div>
+					)}
 
-					<LessonCodeExample
-						id="example-heading"
-						title="예시 사용법"
-						code={codeExample}
-					/>
+					{isError && (
+						<div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md">
+							<h2 className="text-lg font-medium mb-2">
+								Error Loading Lessons
+							</h2>
+							<p>
+								{error instanceof Error
+									? error.message
+									: "An unknown error occurred"}
+							</p>
+						</div>
+					)}
 
-					<LessonSection id="key-points-heading" title="이 문제의 핵심">
-						<p className="text-[#666] mb-4">
-							이 문제는 특히 여러 쿼리에 대해 효율한 합계를 사용하는
-							시나리오에서 효율적인 계산 방법이 중요합니다.
-						</p>
-						<LessonKeyPoints
-							id="core-points-heading"
-							title="핵심 포인트"
-							points={keyPoints}
-						/>
-					</LessonSection>
+					{!isLoading && !isError && !currentSection && (
+						<div className="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-md">
+							<h2 className="text-lg font-medium mb-2">No Lessons Available</h2>
+							<p>There are no lessons available for this challenge.</p>
+						</div>
+					)}
 
-					<LessonSection id="description-heading" title="Description">
-						<p className="text-[#666] mb-4">
-							주어진 2D 행렬 matrix에 대해, 다음 유형의 여러 쿼리를 처리해야
-							합니다.
-						</p>
-						<p className="text-[#666] mb-4">
-							matrix의 요소들 중, 왼쪽 위 모서리 (row1, col1)과 오른쪽 아래
-							모서리 (row2, col2)로 정의되는 사각형 내부 요소들의 합을 계산해야
-							합니다.
-						</p>
-						<p className="text-[#666] mb-4">NumMatrix 클래스를 구현하세요:</p>
-						<ul className="list-disc pl-5 space-y-2 text-[#666]">
-							<li>
-								<code className="bg-[#f8f8f6] px-1 rounded">
-									NumMatrix(int[][] matrix)
-								</code>
-								: 정수 행렬 matrix로 객체를 초기화합니다.
-							</li>
-							<li>
-								<code className="bg-[#f8f8f6] px-1 rounded">
-									int sumRegion(int row1, int col1, int row2, int col2)
-								</code>
-								: 왼쪽 위 모서리 (row1, col1)과 오른쪽 아래 모서리 (row2,
-								col2)로 정의되는 사각형 내부 matrix 요소들의 합을 반환합니다.
-								<br />
-								sumRegion이 O(1) 시간 복잡도로 동작하는 알고리즘을 설계해야
-								합니다.
-							</li>
-						</ul>
-					</LessonSection>
-
-					<LessonSection id="constraints-heading" title="Constraints">
-						<ul className="list-disc pl-5 space-y-2 text-[#666]">
-							<li>m == matrix.length</li>
-							<li>n == matrix[i].length</li>
-							<li>1 &lt;= m, n &lt;= 200</li>
-							<li>
-								-10<sup>4</sup> &lt;= matrix[i][j] &lt;= 10<sup>4</sup>
-							</li>
-							<li>0 &lt;= row1 &lt;= row2 &lt; m</li>
-							<li>0 &lt;= col1 &lt;= col2 &lt; n</li>
-							<li>
-								'sumRegion' 메소드는 최대 10<sup>4</sup>번 호출됩니다.
-							</li>
-						</ul>
-					</LessonSection>
+					{!isLoading && !isError && currentSection && (
+						<div className="space-y-6">
+							{renderSectionContent(currentSection)}
+						</div>
+					)}
 				</div>
 			</main>
 
 			{/* Footer */}
 			<footer className="flex items-center justify-between p-4 border-t border-[#eaeaea]">
 				<button
+					type="button"
 					className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border bg-background hover:bg-[#f8f3e7] hover:text-[#a67a2e] active:bg-[#e6d7b8] active:text-[#8a6626] rounded-md h-9 px-4 border-[#e0e0e0]"
-					disabled
-					aria-label="Go to previous lesson"
+					onClick={handlePrevSection}
+					disabled={
+						isLoading || (currentLessonIndex === 0 && currentSectionIndex === 0)
+					}
+					aria-label="Go to previous section"
 				>
 					<Icon id="prevIcon" title="Previous" className="h-4 w-4 mr-1">
-						<path d="m15 18-6-6 6-6"></path>
+						<path d="m15 18-6-6 6-6" />
 					</Icon>
 					Previous
 				</button>
-				<div className="text-sm text-[#666]" aria-label="Lesson 1 of 9">
-					1 of 9
+				<div
+					className="text-sm text-[#666]"
+					aria-label={`Section ${currentSectionIndex + 1} of ${totalSections}`}
+				>
+					{!isLoading && currentSection
+						? `${currentSectionIndex + 1} of ${totalSections}`
+						: ""}
 				</div>
 				<button
+					type="button"
 					className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border bg-background hover:bg-[#f8f3e7] hover:text-[#a67a2e] active:bg-[#e6d7b8] active:text-[#8a6626] rounded-md h-9 px-4 border-[#e0e0e0]"
-					aria-label="Go to next lesson"
+					onClick={handleNextSection}
+					disabled={
+						isLoading ||
+						(currentLessonIndex === totalLessons - 1 &&
+							currentSectionIndex === totalSections - 1)
+					}
+					aria-label="Go to next section"
 				>
 					Next
 					<Icon id="nextIcon" title="Next" className="h-4 w-4 ml-1">
-						<path d="m9 18 6-6-6-6"></path>
+						<path d="m9 18 6-6-6-6" />
 					</Icon>
 				</button>
 			</footer>
