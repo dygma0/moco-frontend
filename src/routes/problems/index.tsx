@@ -7,10 +7,62 @@ import { PageHeader } from "../../components/ui/PageHeader";
 import { ProblemsFilters } from "../../components/problems/ProblemsFilters";
 import { ProblemsTable } from "../../components/problems/ProblemsTable";
 import type { ProblemRowProps } from "../../components/problems/ProblemRow";
+import { useChallenges } from "../../api/hooks/useChallenges";
+import { mapChallengeToProblemRow } from "../../api/mappers/challengeMapper";
 
 export const Route = createFileRoute("/problems/")({
 	component: ProblemsPage,
 });
+
+const SkeletonElement = ({ className }: { className?: string }) => (
+	<div className={`bg-gray-200 rounded animate-pulse ${className || ""}`} />
+);
+
+const SkeletonRow = () => (
+	<tr className="border-b border-[#eaeaea]">
+		<td className="px-4 py-4">
+			<SkeletonElement className="h-4 w-3/4" />
+		</td>
+		<td className="px-4 py-4">
+			<SkeletonElement className="h-4 w-1/2" />
+		</td>
+		<td className="px-4 py-4">
+			<div className="flex flex-wrap gap-1">
+				<SkeletonElement className="h-4 w-12" />
+				<SkeletonElement className="h-4 w-16" />
+			</div>
+		</td>
+	</tr>
+);
+
+const ProblemsTableSkeleton = ({ rows = 10 }: { rows?: number }) => (
+	<div className="overflow-x-auto">
+		<table className="w-full">
+			<thead>
+				<tr className="border-b border-[#eaeaea] bg-[#f9fafb] text-xs text-[#666]">
+					<th className="px-4 py-3 text-left font-medium">
+						<div className="flex items-center">Title</div>
+					</th>
+					<th className="px-4 py-3 text-left font-medium">
+						<div className="flex items-center">Difficulty</div>
+					</th>
+					<th className="px-4 py-3 text-left font-medium">Tags</th>
+				</tr>
+			</thead>
+			<tbody>
+				{/* eslint-disable-next-line react/no-array-index-key */}
+				{Array.from({ length: rows }).map((_, index) => (
+					<SkeletonRow key={index} />
+				))}
+			</tbody>
+		</table>
+		{/* Skeleton Pagination Placeholder */}
+		<div className="flex items-center justify-between px-4 py-3 border-t border-[#eaeaea]">
+			<SkeletonElement className="h-4 w-24" />
+			<SkeletonElement className="h-4 w-20" />
+		</div>
+	</div>
+);
 
 function ProblemsPage() {
 	const [searchQuery, setSearchQuery] = useState("");
@@ -18,69 +70,22 @@ function ProblemsPage() {
 	const [tagFilter, setTagFilter] = useState("Any Tag");
 	const [currentPage, setCurrentPage] = useState(1);
 
-	const problems: ProblemRowProps[] = [
-		{
-			id: 1,
-			title: "Two Sum",
-			difficulty: "Easy",
-			tags: ["Array", "Hash Table"],
-		},
-		{
-			id: 2,
-			title: "Add Two Numbers",
-			difficulty: "Medium",
-			tags: ["Linked List", "Math", "Recursion"],
-		},
-		{
-			id: 3,
-			title: "Longest Substring Without Repeating Characters",
-			difficulty: "Medium",
-			tags: ["Hash Table", "String", "Sliding Window"],
-		},
-		{
-			id: 4,
-			title: "Median of Two Sorted Arrays",
-			difficulty: "Hard",
-			tags: ["Array", "Binary Search", "Divide and Conquer"],
-		},
-		{
-			id: 5,
-			title: "Longest Palindromic Substring",
-			difficulty: "Medium",
-			tags: ["String", "Dynamic Programming"],
-		},
-		{
-			id: 6,
-			title: "Zigzag Conversion",
-			difficulty: "Medium",
-			tags: ["String"],
-		},
-		{
-			id: 7,
-			title: "Reverse Integer",
-			difficulty: "Medium",
-			tags: ["Math"],
-		},
-		{
-			id: 8,
-			title: "String to Integer (atoi)",
-			difficulty: "Medium",
-			tags: ["String", "Math"],
-		},
-		{
-			id: 9,
-			title: "Palindrome Number",
-			difficulty: "Easy",
-			tags: ["Math"],
-		},
-		{
-			id: 10,
-			title: "Regular Expression Matching",
-			difficulty: "Hard",
-			tags: ["String", "Dynamic Programming", "Recursion"],
-			isPremium: true,
-		},
-	];
+	const apiPage = currentPage - 1;
+	const itemsPerPage = 10;
+
+	const { data, isLoading, error } = useChallenges(
+		apiPage,
+		itemsPerPage,
+		searchQuery,
+		difficultyFilter,
+		tagFilter,
+	);
+
+	const problems: ProblemRowProps[] =
+		data?.content.map(mapChallengeToProblemRow) || [];
+
+	const totalPages = data?.totalPages || 1;
+	const totalProblems = data?.totalElements || 0;
 
 	const handleSearchChange = (value: string) => {
 		setSearchQuery(value);
@@ -156,14 +161,30 @@ function ProblemsPage() {
 						onReset={handleResetFilters}
 					/>
 
+					{/* Loading State */}
+					{isLoading && <ProblemsTableSkeleton rows={itemsPerPage} />}
+
+					{/* Error State */}
+					{error && !isLoading && (
+						<div className="p-8 text-center">
+							<p className="text-red-500">
+								Error loading problems. Please try again later.
+							</p>
+							<p className="text-sm text-gray-500 mt-2">{error.message}</p>
+						</div>
+					)}
+
 					{/* Table */}
-					<ProblemsTable
-						problems={problems}
-						currentPage={currentPage}
-						totalPages={235}
-						totalProblems={2345}
-						onPageChange={handlePageChange}
-					/>
+					{!isLoading && !error && (
+						<ProblemsTable
+							problems={problems}
+							currentPage={currentPage}
+							totalPages={totalPages}
+							totalProblems={totalProblems}
+							onPageChange={handlePageChange}
+							itemsPerPage={itemsPerPage}
+						/>
+					)}
 				</div>
 			</div>
 		</div>

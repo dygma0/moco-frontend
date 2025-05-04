@@ -1,6 +1,5 @@
 import { ProblemRow, type ProblemRowProps } from "./ProblemRow";
 import { Pagination } from "../ui/Pagination";
-import { Icon } from "../ui/Icon";
 
 interface ProblemsTableProps {
 	problems: ProblemRowProps[];

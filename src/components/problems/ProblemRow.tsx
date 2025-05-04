@@ -1,8 +1,7 @@
-import { Icon } from "../ui/Icon";
 import { Badge } from "../ui/Badge";
 
 export interface ProblemRowProps {
-	id: number;
+	id: string;
 	title: string;
 	difficulty: "Easy" | "Medium" | "Hard";
 	tags: string[];
