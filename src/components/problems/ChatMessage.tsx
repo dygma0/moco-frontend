@@ -12,6 +12,31 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ isAI, message, timestamp }: ChatMessageProps) {
+	const syntaxHighlighterStyle = isAI
+		? (vscDarkPlus as { [key: string]: CSSProperties })
+		: (vs as { [key: string]: CSSProperties });
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const codeBlockStyle: any = {
+		...syntaxHighlighterStyle,
+		whiteSpace: "pre-wrap",
+		wordBreak: "break-word",
+	};
+	if (codeBlockStyle['pre[class*="language-"]']) {
+		codeBlockStyle['pre[class*="language-"]'] = {
+			...(codeBlockStyle['pre[class*="language-"]'] || {}),
+			whiteSpace: "pre-wrap",
+			wordBreak: "break-word",
+		};
+	}
+	if (codeBlockStyle['code[class*="language-"]']) {
+		codeBlockStyle['code[class*="language-"]'] = {
+			...(codeBlockStyle['code[class*="language-"]'] || {}),
+			whiteSpace: "pre-wrap",
+			wordBreak: "break-word",
+		};
+	}
+
 	return (
 		<li className="mb-4 pr-4">
 			<article className="flex flex-col">
@@ -46,11 +71,7 @@ export function ChatMessage({ isAI, message, timestamp }: ChatMessageProps) {
 									const match = /language-(\w+)/.exec(className || "");
 									return match ? (
 										<SyntaxHighlighter
-											style={
-												isAI
-													? (vscDarkPlus as { [key: string]: CSSProperties })
-													: (vs as { [key: string]: CSSProperties })
-											}
+											style={codeBlockStyle as { [key: string]: CSSProperties }}
 											language={match[1]}
 											PreTag="div"
 											{...props}
@@ -58,7 +79,10 @@ export function ChatMessage({ isAI, message, timestamp }: ChatMessageProps) {
 											{String(children).replace(/\n$/, "")}
 										</SyntaxHighlighter>
 									) : (
-										<code className={className} {...props}>
+										<code
+											className={`${className || ""} whitespace-pre-wrap break-words`}
+											{...props}
+										>
 											{children}
 										</code>
 									);
