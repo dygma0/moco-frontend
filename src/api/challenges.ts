@@ -20,7 +20,7 @@ export interface ChallengeResponse {
 	updatedAt: string;
 }
 
-const API_BASE_URL = "https://api-quibe.otter.coffee/api";
+import { API_BASE_URL } from "../config/constants";
 
 export const challengesApi = {
 	/**
