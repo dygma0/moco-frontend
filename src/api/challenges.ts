@@ -101,6 +101,8 @@ export interface LessonImplementationSection {
 			order: number;
 			code: string;
 			explanation: string;
+			highlightLines?: number[];
+			diagram?: string;
 		}>;
 	};
 }
