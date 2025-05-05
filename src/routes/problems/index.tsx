@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Icon } from "../../components/ui/Icon";
-import { SearchInput } from "../../components/ui/SearchInput";
-import { Button } from "../../components/ui/Button";
 import { PageHeader } from "../../components/ui/PageHeader";
-import { ProblemsFilters } from "../../components/problems/ProblemsFilters";
 import { ProblemsTable } from "../../components/problems/ProblemsTable";
 import type { ProblemRowProps } from "../../components/problems/ProblemRow";
 import { useChallenges } from "../../api/hooks/useChallenges";
@@ -137,30 +134,10 @@ function ProblemsPage() {
 							<path d="M10 9H8" />
 						</Icon>
 					}
-					actions={
-						<>
-							<SearchInput
-								placeholder="Search problems..."
-								value={searchQuery}
-								onChange={handleSearchChange}
-							/>
-							<Button variant="primary" size="sm" onClick={handleRandomProblem}>
-								Random Problem
-							</Button>
-						</>
-					}
 				/>
 
 				{/* Table Card */}
 				<div className="bg-white rounded-lg shadow-sm mb-6">
-					{/* Filters */}
-					<ProblemsFilters
-						difficultyFilter={difficultyFilter}
-						tagFilter={tagFilter}
-						onFilterChange={handleFilterChange}
-						onReset={handleResetFilters}
-					/>
-
 					{/* Loading State */}
 					{isLoading && <ProblemsTableSkeleton rows={itemsPerPage} />}
 
