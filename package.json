@@ -16,6 +16,7 @@
     "postcss": "^8.5.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-helmet": "^6.1.0",
     "react-hot-toast": "^2.5.2",
     "react-markdown": "^10.1.0",
     "react-syntax-highlighter": "^15.6.1",
@@ -31,6 +32,7 @@
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.1",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/react-helmet": "^6.1.11",
     "biome": "^0.3.3",
     "tailwindcss": "^4.1.5",
     "typescript": "^5.8.2"

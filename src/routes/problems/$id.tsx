@@ -4,9 +4,9 @@ import { BackNavigation } from "../../components/problems/BackNavigation";
 import { ProblemDescription } from "../../components/problems/ProblemDescription";
 import { DiscussionChatBox } from "../../components/problems/DiscussionChatBox.tsx";
 import { ProblemDescriptionSkeleton } from "../../components/problems/ProblemDescriptionSkeleton";
-import { useEffect } from "react";
 import { useChallenge } from "../../api/hooks/useChallenge";
 import { mapChallengeToProblemDetail } from "../../api/mappers/challengeMapper";
+import { SEO } from "../../components/SEO";
 
 export const Route = createFileRoute("/problems/$id")({
 	component: ProblemDetailPage,
@@ -20,19 +20,23 @@ function ProblemDetailPage() {
 		? mapChallengeToProblemDetail(challengeData)
 		: undefined;
 
-	useEffect(() => {
-		if (problem) {
-			document.title = `Problem ${id} - ${problem.title} | Quibe`;
-		} else {
-			document.title = `Problem ${id} | Quibe`;
-		}
-		return () => {
-			document.title = "Quibe";
-		};
-	}, [id, problem]);
+	const pageTitle = problem
+		? `Problem ${id} - ${problem.title} | Quibe`
+		: `Problem ${id} | Quibe`;
+
+	const pageDescription = problem
+		? `${problem.description.substring(0, 150)}...`
+		: `Solve coding challenge Problem ${id} on Quibe - Improve your programming skills with interactive problems`;
 
 	return (
 		<main className="flex-1 p-6 overflow-auto" aria-labelledby="problem-title">
+			<SEO
+				title={pageTitle}
+				description={pageDescription}
+				keywords={`coding challenge, problem ${id}, programming, algorithm, quibe`}
+				ogType="article"
+			/>
+
 			<div className="max-w-[1200px] mx-auto">
 				{/* Skip link for keyboard users */}
 				<a
