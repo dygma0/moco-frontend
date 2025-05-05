@@ -12,6 +12,7 @@ export default defineConfig({
 		},
 	},
 	html: {
+		title: "Quibe - 퀴베 코딩 챌린지",
 		tags: [
 			{
 				tag: "link",
