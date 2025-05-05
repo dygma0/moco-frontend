@@ -33,7 +33,7 @@ interface LessonCodeExampleProps {
 	code: string;
 }
 
-function LessonSection({
+function LessonSectionComponent({
 	id,
 	title,
 	children,
@@ -56,8 +56,8 @@ function LessonKeyPoints({ id, title, points }: LessonKeyPointsProps) {
 				{title}
 			</h3>
 			<ul className="list-disc pl-5 space-y-2 text-[#666] text-base">
-				{points.map((point, index) => (
-					<li key={index}>
+				{points.map((point, idx) => (
+					<li key={`${id}-point-${idx}`}>
 						<strong>{point.title}</strong> {point.description}
 					</li>
 				))}
@@ -80,6 +80,51 @@ function LessonCodeExample({ id, title, code }: LessonCodeExampleProps) {
 	);
 }
 
+function LessonSkeleton() {
+	return (
+		<div className="space-y-8 animate-pulse">
+			{/* Section Title Skeleton */}
+			<div
+				className="h-8 w-3/4 bg-gray-200 rounded-md mb-8"
+				aria-hidden="true"
+			/>
+
+			{/* Text Content Skeleton */}
+			<div className="space-y-4" aria-hidden="true">
+				<div className="h-4 w-full bg-gray-200 rounded-md" />
+				<div className="h-4 w-11/12 bg-gray-200 rounded-md" />
+				<div className="h-4 w-10/12 bg-gray-200 rounded-md" />
+				<div className="h-4 w-full bg-gray-200 rounded-md" />
+				<div className="h-4 w-9/12 bg-gray-200 rounded-md" />
+			</div>
+
+			{/* Key Points Skeleton */}
+			<div
+				className="bg-gray-100 p-4 rounded-lg border border-gray-200"
+				aria-hidden="true"
+			>
+				<div className="h-6 w-1/3 bg-gray-200 rounded-md mb-4" />
+				<div className="space-y-3 pl-5">
+					<div className="h-4 w-11/12 bg-gray-200 rounded-md" />
+					<div className="h-4 w-10/12 bg-gray-200 rounded-md" />
+					<div className="h-4 w-full bg-gray-200 rounded-md" />
+				</div>
+			</div>
+
+			{/* Code Example Skeleton */}
+			<div className="bg-gray-900 p-4 rounded-lg" aria-hidden="true">
+				<div className="h-6 w-1/4 bg-gray-700 rounded-md mb-4" />
+				<div className="space-y-2">
+					<div className="h-4 w-full bg-gray-700 rounded-md" />
+					<div className="h-4 w-11/12 bg-gray-700 rounded-md" />
+					<div className="h-4 w-10/12 bg-gray-700 rounded-md" />
+					<div className="h-4 w-9/12 bg-gray-700 rounded-md" />
+				</div>
+			</div>
+		</div>
+	);
+}
+
 export function LessonContent({ onClose, challengeId }: LessonContentProps) {
 	const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
 	const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
@@ -89,7 +134,7 @@ export function LessonContent({ onClose, challengeId }: LessonContentProps) {
 	// Reset section index when lesson changes
 	useEffect(() => {
 		setCurrentSectionIndex(0);
-	}, [currentLessonIndex]);
+	}, []);
 
 	const currentLesson =
 		lessons && lessons.length > 0 ? lessons[currentLessonIndex] : null;
@@ -152,13 +197,24 @@ export function LessonContent({ onClose, challengeId }: LessonContentProps) {
 					</div>
 					<div>
 						<h1 id="lesson-title" className="text-lg font-medium text-[#333]">
-							{currentSection ? currentSection.title : "Loading..."}
+							{isLoading ? (
+								<div className="h-6 w-48 bg-gray-200 rounded-md animate-pulse" />
+							) : currentSection ? (
+								currentSection.title
+							) : (
+								"No Content"
+							)}
 						</h1>
 						<div className="flex items-center gap-2 text-sm">
-							{!isLoading && currentLesson && (
-								<span className="text-[#666]">
-									Lesson {currentSectionIndex + 1} of {totalSections}
-								</span>
+							{isLoading ? (
+								<div className="h-4 w-36 bg-gray-200 rounded-md animate-pulse" />
+							) : (
+								!isLoading &&
+								currentLesson && (
+									<span className="text-[#666]">
+										Lesson {currentSectionIndex + 1} of {totalSections}
+									</span>
+								)
 							)}
 						</div>
 					</div>
@@ -216,11 +272,7 @@ export function LessonContent({ onClose, challengeId }: LessonContentProps) {
 				aria-labelledby="lesson-content-tab"
 			>
 				<div className="max-w-4xl mx-auto">
-					{isLoading && (
-						<div className="flex justify-center items-center h-64">
-							<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c28b3b]" />
-						</div>
-					)}
+					{isLoading && <LessonSkeleton />}
 
 					{isError && (
 						<div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md">
