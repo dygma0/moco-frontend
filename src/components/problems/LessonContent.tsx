@@ -8,7 +8,7 @@ import type { LessonSection } from "../../api/challenges";
 
 interface LessonContentProps {
 	onClose: () => void;
-	challengeId?: string;
+	challengeId: string;
 }
 
 interface LessonSectionProps {
@@ -33,7 +33,6 @@ interface LessonCodeExampleProps {
 	code: string;
 }
 
-// LessonSection component for consistent section styling
 function LessonSection({
 	id,
 	title,
@@ -50,7 +49,6 @@ function LessonSection({
 	);
 }
 
-// LessonKeyPoints component for displaying key points
 function LessonKeyPoints({ id, title, points }: LessonKeyPointsProps) {
 	return (
 		<div className="bg-[#f8f3e7] p-4 rounded-lg border border-[#e6d7b8]">
@@ -68,7 +66,6 @@ function LessonKeyPoints({ id, title, points }: LessonKeyPointsProps) {
 	);
 }
 
-// LessonCodeExample component for displaying code examples
 function LessonCodeExample({ id, title, code }: LessonCodeExampleProps) {
 	return (
 		<section
@@ -83,10 +80,7 @@ function LessonCodeExample({ id, title, code }: LessonCodeExampleProps) {
 	);
 }
 
-export function LessonContent({
-	onClose,
-	challengeId = "6810e04894294c605ee43018",
-}: LessonContentProps) {
+export function LessonContent({ onClose, challengeId }: LessonContentProps) {
 	const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
 	const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
 
@@ -119,7 +113,6 @@ export function LessonContent({
 			setCurrentSectionIndex(currentSectionIndex - 1);
 		} else if (currentLessonIndex > 0) {
 			setCurrentLessonIndex(currentLessonIndex - 1);
-			// Set to the last section of the previous lesson
 			const prevLesson = lessons?.[currentLessonIndex - 1];
 			if (prevLesson) {
 				setCurrentSectionIndex(prevLesson.sections.length - 1);
@@ -127,15 +120,16 @@ export function LessonContent({
 		}
 	};
 
-	// Render content based on section type
 	const renderSectionContent = (section: LessonSection) => {
 		switch (section.type) {
 			case "TEXT":
-				return <TextContent section={section} />;
+				return <TextContent key={currentSectionIndex} section={section} />;
 			case "GAP_FILL":
-				return <GapFillContent section={section} />;
+				return <GapFillContent key={currentSectionIndex} section={section} />;
 			case "IMPLEMENTATION":
-				return <ImplementationContent section={section} />;
+				return (
+					<ImplementationContent key={currentSectionIndex} section={section} />
+				);
 			default:
 				return <div>Unsupported section type</div>;
 		}
@@ -163,7 +157,7 @@ export function LessonContent({
 						<div className="flex items-center gap-2 text-sm">
 							{!isLoading && currentLesson && (
 								<span className="text-[#666]">
-									Lesson {currentLessonIndex + 1} of {totalLessons}
+									Lesson {currentSectionIndex + 1} of {totalSections}
 								</span>
 							)}
 						</div>
@@ -272,14 +266,6 @@ export function LessonContent({
 					</Icon>
 					Previous
 				</button>
-				<div
-					className="text-sm text-[#666]"
-					aria-label={`Section ${currentSectionIndex + 1} of ${totalSections}`}
-				>
-					{!isLoading && currentSection
-						? `${currentSectionIndex + 1} of ${totalSections}`
-						: ""}
-				</div>
 				<button
 					type="button"
 					className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border bg-background hover:bg-[#f8f3e7] hover:text-[#a67a2e] active:bg-[#e6d7b8] active:text-[#8a6626] rounded-md h-9 px-4 border-[#e0e0e0]"

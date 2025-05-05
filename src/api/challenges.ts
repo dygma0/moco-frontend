@@ -260,8 +260,8 @@ export const challengesApi = {
 	 * @returns A promise that resolves to the list of challenges with pagination info
 	 */
 	getChallenges: async (
-		page: number = 0,
-		size: number = 10,
+		page = 0,
+		size = 10,
 		search?: string,
 		difficulty?: string,
 		tag?: string,

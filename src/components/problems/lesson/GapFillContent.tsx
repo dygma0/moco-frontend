@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { type LessonGapFillSection } from "../../../api/challenges";
+import type { LessonGapFillSection } from "../../../api/challenges";
 
 interface GapFillContentProps {
 	section: LessonGapFillSection;
@@ -25,7 +25,7 @@ export function GapFillContent({ section }: GapFillContentProps) {
 				{section.data.displayTokens.map((token, index) =>
 					token.isBlank ? (
 						<span
-							key={index}
+							key={`${token.text}-${index}`}
 							className={`px-3 py-1 mx-1 min-w-16 inline-block text-center transition-all duration-200 ease-in-out ${
 								selectedOption !== null
 									? isCorrect
@@ -37,9 +37,10 @@ export function GapFillContent({ section }: GapFillContentProps) {
 							{selectedOption !== null
 								? section.data.choices[selectedOption].text
 								: ""}
+							&nbsp;
 						</span>
 					) : (
-						<span key={index}>{token.text}</span>
+						<span key={`${token.text}-${index}`}>{token.text}&nbsp;</span>
 					),
 				)}
 			</div>
