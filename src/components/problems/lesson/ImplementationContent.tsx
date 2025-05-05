@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { type LessonImplementationSection } from "../../../api/challenges";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import ReactMarkdown from "react-markdown";
+import type { LessonImplementationSection } from "../../../api/challenges";
 
 interface ImplementationContentProps {
 	section: LessonImplementationSection;
@@ -10,10 +10,70 @@ interface ImplementationContentProps {
 
 export function ImplementationContent({ section }: ImplementationContentProps) {
 	const [currentStep, setCurrentStep] = useState(0);
+	const codeContainerRef = useRef<HTMLDivElement>(null);
 	const sortedSteps = [...section.data.codeSteps].sort(
 		(a, b) => a.order - b.order,
 	);
 	const currentStepData = sortedSteps[currentStep];
+
+	const accumulatedCode = useMemo(() => {
+		let codeLines: string[] = [];
+		for (let i = 0; i <= currentStep; i++) {
+			codeLines = codeLines.concat(sortedSteps[i].code.split("\n"));
+		}
+		return codeLines.join("\n");
+	}, [sortedSteps, currentStep]);
+
+	const stepLineRanges = useMemo(() => {
+		const ranges = [];
+		let lineCount = 0;
+
+		for (let i = 0; i <= currentStep; i++) {
+			const step = sortedSteps[i];
+			const stepLines = step.code.split("\n").length;
+
+			ranges.push({
+				startLine: lineCount + 1,
+				endLine: lineCount + stepLines,
+				isCurrentStep: i === currentStep,
+			});
+
+			lineCount += stepLines;
+		}
+
+		return ranges;
+	}, [sortedSteps, currentStep]);
+
+	const currentHighlightLines = useMemo(() => {
+		const currentRange = stepLineRanges.find((range) => range.isCurrentStep);
+		if (!currentRange || !currentStepData.highlightLines) return [];
+
+		return currentStepData.highlightLines.map(
+			(line) => line + (currentRange.startLine - 1),
+		);
+	}, [stepLineRanges, currentStepData.highlightLines]);
+
+	const scrollToCurrentStep = useCallback(() => {
+		if (!codeContainerRef.current) return;
+
+		const codeElement = codeContainerRef.current;
+		const currentRange = stepLineRanges.find((range) => range.isCurrentStep);
+
+		if (currentRange) {
+			const lineElements = codeElement.querySelectorAll(".linenumber");
+			const targetLine = lineElements[currentRange.startLine - 1];
+
+			if (targetLine) {
+				targetLine.scrollIntoView({ behavior: "smooth", block: "start" });
+			}
+		}
+	}, [stepLineRanges]);
+
+	useEffect(() => {
+		if (currentStep > 0) {
+			scrollToCurrentStep();
+		}
+	}, [currentStep, scrollToCurrentStep]);
 
 	const handleNextStep = () => {
 		if (currentStep < sortedSteps.length - 1) {
@@ -35,8 +95,11 @@ export function ImplementationContent({ section }: ImplementationContentProps) {
 		.slice(1)
 		.join("\n");
 
-	// 단계 진행 완료도를 퍼센트로 계산
 	const progressPercentage = ((currentStep + 1) / sortedSteps.length) * 100;
+
+	const getStepKey = (index: number) => {
+		return `step-${section.title}-${index}`;
+	};
 
 	return (
 		<div className="space-y-6">
@@ -58,7 +121,10 @@ export function ImplementationContent({ section }: ImplementationContentProps) {
 				/>
 			</div>
 
-			<div className="flex items-center justify-end mb-4 text-sm">
+			<div className="flex items-center justify-between mb-4 text-sm">
+				<div className="font-medium text-[#333]">
+					{currentStep + 1}/{sortedSteps.length} 단계
+				</div>
 				<div className="flex space-x-2">
 					<button
 						type="button"
@@ -106,9 +172,7 @@ export function ImplementationContent({ section }: ImplementationContentProps) {
 					</div>
 					<div className="p-4">
 						<div className="markdown-content text-[#666] text-base">
-							<p className="text-[#666] text-base leading-relaxed">
-								<ReactMarkdown>{stepTitle}</ReactMarkdown>
-							</p>
+							<ReactMarkdown>{stepTitle}</ReactMarkdown>
 						</div>
 					</div>
 				</div>
@@ -139,35 +203,54 @@ export function ImplementationContent({ section }: ImplementationContentProps) {
 							단계 {currentStep + 1}/{sortedSteps.length}
 						</div>
 					</div>
-					<SyntaxHighlighter
-						language="javascript"
-						style={vscDarkPlus}
-						customStyle={{
-							margin: 0,
-							padding: "1rem",
-							maxHeight: "400px",
-							overflow: "auto",
-						}}
-						showLineNumbers={true}
-						wrapLines={true}
-						lineProps={(lineNumber) => {
-							const highlightLines = currentStepData.highlightLines || [];
-							const match = highlightLines.includes(lineNumber);
-							return {
-								style: {
-									display: "block",
-									backgroundColor: match
-										? "rgba(194, 139, 59, 0.1)"
-										: "transparent",
-									borderLeft: match ? "3px solid #c28b3b" : "none",
-									paddingLeft: match ? "0.5rem" : "0.7rem",
-									transition: "all 0.2s ease-in-out",
-								},
-							};
-						}}
-					>
-						{currentStepData.code}
-					</SyntaxHighlighter>
+
+					<div ref={codeContainerRef}>
+						<SyntaxHighlighter
+							language="javascript"
+							style={vscDarkPlus}
+							customStyle={{
+								margin: 0,
+								padding: "1rem",
+								maxHeight: "400px",
+								overflow: "auto",
+							}}
+							showLineNumbers={true}
+							wrapLines={true}
+							lineProps={(lineNumber) => {
+								const currentRange = stepLineRanges.find(
+									(range) => range.isCurrentStep,
+								);
+								const isCurrentStepLine =
+									currentRange &&
+									lineNumber >= currentRange.startLine &&
+									lineNumber <= currentRange.endLine;
+
+								const isHighlighted =
+									currentHighlightLines.includes(lineNumber);
+
+								return {
+									style: {
+										display: "block",
+										backgroundColor: isHighlighted
+											? "rgba(194, 139, 59, 0.2)"
+											: isCurrentStepLine
+												? "rgba(194, 139, 59, 0.05)"
+												: "transparent",
+										borderLeft: isHighlighted
+											? "3px solid #c28b3b"
+											: isCurrentStepLine
+												? "3px solid hsl(59, 74.90%, 62.50%)"
+												: "none",
+										paddingLeft:
+											isHighlighted || isCurrentStepLine ? "0.5rem" : "0.7rem",
+										transition: "all 0.2s ease-in-out",
+									},
+								};
+							}}
+						>
+							{accumulatedCode}
+						</SyntaxHighlighter>
+					</div>
 				</div>
 			</div>
 
