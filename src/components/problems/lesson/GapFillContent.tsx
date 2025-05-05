@@ -56,7 +56,7 @@ export function GapFillContent({ section }: GapFillContentProps) {
 			>
 				{section.data.choices.map((choice, index) => (
 					<div
-						key={index}
+						key={`choice-${index}`}
 						className={`flex items-center space-x-2 p-3 rounded-md border transition-all duration-200 ease-in-out ${
 							isSubmitted
 								? index === section.data.correctOptionIndex
@@ -75,7 +75,7 @@ export function GapFillContent({ section }: GapFillContentProps) {
 							aria-checked={selectedOption === index}
 							data-state={selectedOption === index ? "checked" : "unchecked"}
 							value={index.toString()}
-							className={`aspect-square h-5 w-5 rounded-full border transition-all duration-200 ease-in-out ${
+							className={`relative flex items-center justify-center aspect-square h-5 w-5 rounded-full border transition-all duration-200 ease-in-out ${
 								isSubmitted
 									? index === section.data.correctOptionIndex
 										? "border-green-500 bg-green-100"
@@ -93,30 +93,63 @@ export function GapFillContent({ section }: GapFillContentProps) {
 							disabled={isSubmitted}
 							onClick={() => handleOptionSelect(index)}
 						>
-							{selectedOption === index && (
-								<span
-									data-state="checked"
-									data-disabled={isSubmitted ? "" : undefined}
-									className="flex items-center justify-center"
-								>
+							{selectedOption === index && !isSubmitted && (
+								<span className="flex items-center justify-center">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										width="24"
 										height="24"
 										viewBox="0 0 24 24"
 										fill="none"
-										stroke={
-											isSubmitted
-												? index === section.data.correctOptionIndex
-													? "#16a34a"
-													: "#ef4444"
-												: "#c28b3b"
-										}
+										stroke="#c28b3b"
 										strokeWidth="2"
 										strokeLinecap="round"
 										strokeLinejoin="round"
 										className="lucide lucide-circle h-3 w-3 fill-current"
 									/>
+								</span>
+							)}
+
+							{isSubmitted && (
+								<span className="absolute inset-0 flex items-center justify-center text-xs font-bold">
+									{index === section.data.correctOptionIndex ? (
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="12"
+											height="12"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="#16a34a"
+											strokeWidth="3"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											className="lucide lucide-check"
+											aria-hidden="true"
+											role="img"
+										>
+											<title>정답</title>
+											<polyline points="20 6 9 17 4 12" />
+										</svg>
+									) : selectedOption === index ? (
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="12"
+											height="12"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="#ef4444"
+											strokeWidth="3"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											className="lucide lucide-x"
+											aria-hidden="true"
+											role="img"
+										>
+											<title>오답</title>
+											<path d="M18 6 6 18" />
+											<path d="m6 6 12 12" />
+										</svg>
+									) : null}
 								</span>
 							)}
 						</button>
@@ -134,24 +167,6 @@ export function GapFillContent({ section }: GapFillContentProps) {
 						>
 							{choice.text}
 						</label>
-						{isSubmitted && (
-							<span
-								className={`flex items-center justify-center w-5 h-5 rounded-full transition-all duration-200 ease-in-out ${
-									index === section.data.correctOptionIndex
-										? "bg-green-100 text-green-600"
-										: selectedOption === index
-											? "bg-red-100 text-red-600"
-											: ""
-								}`}
-								aria-hidden="true"
-							>
-								{index === section.data.correctOptionIndex
-									? "✓"
-									: selectedOption === index
-										? "✗"
-										: ""}
-							</span>
-						)}
 					</div>
 				))}
 			</div>
