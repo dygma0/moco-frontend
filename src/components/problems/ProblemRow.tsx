@@ -25,26 +25,29 @@ export function ProblemRow({
 
 	return (
 		<tr className="border-b border-[#eaeaea] hover:bg-[#f9fafb] transition-colors">
-			<td className="px-4 py-3">
-				<span className="flex items-center">
-					<Link
-						className="text-sm font-medium text-[#333] hover:text-[#c28b3b]"
-						to={`/problems/${id}`}
-						aria-label={`View problem ${id}: ${title}`}
-					>
-						{title}
-					</Link>
-					{isPremium && (
-						<Badge
-							variant="primary"
-							className="ml-2"
-							aria-label="Premium problem"
-						>
-							Premium
-						</Badge>
-					)}
-				</span>
-			</td>
+			<Link
+				to="/problems/$id"
+				params={{ id }}
+				className="contents group"
+				aria-label={`View problem ${title}`}
+			>
+				<td className="px-4 py-3 cursor-pointer">
+					<span className="flex items-center">
+						<span className="text-sm font-medium text-[#333] group-hover:text-[#c28b3b]">
+							{title}
+						</span>
+						{isPremium && (
+							<Badge
+								variant="primary"
+								className="ml-2"
+								aria-label="Premium problem"
+							>
+								Premium
+							</Badge>
+						)}
+					</span>
+				</td>
+			</Link>
 			<td className="px-4 py-3 text-sm">
 				<Badge
 					variant={difficultyVariant}

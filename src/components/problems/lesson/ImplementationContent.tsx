@@ -90,16 +90,8 @@ export function ImplementationContent({ section }: ImplementationContentProps) {
 	const stepTitle = currentStepData.explanation
 		.split("\n")[0]
 		.replace(/^#+\s*/, "");
-	const stepDescription = currentStepData.explanation
-		.split("\n")
-		.slice(1)
-		.join("\n");
 
 	const progressPercentage = ((currentStep + 1) / sortedSteps.length) * 100;
-
-	const getStepKey = (index: number) => {
-		return `step-${section.title}-${index}`;
-	};
 
 	return (
 		<div className="space-y-6">
