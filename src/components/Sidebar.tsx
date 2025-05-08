@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "../api/auth/authStore";
 
 type IconProps = {
@@ -55,7 +56,7 @@ function NavLink({ to, icon, children }: NavLinkProps) {
 			}}
 		>
 			{icon}
-			{children}
+			<span className="sidebar-text">{children}</span>
 		</Link>
 	);
 }
@@ -132,14 +133,16 @@ const shortcutNavItems = [
 	},
 ];
 
-function Header() {
+function Header({ expanded }: { expanded: boolean }) {
 	return (
-		<div className="p-2 mb-6">
-			<div className="flex items-center gap-2">
+		<div className={`p-2 mb-6 flex ${expanded ? "" : "justify-center"}`}>
+			<div
+				className={`flex items-center gap-2 ${expanded ? "" : "justify-center"}`}
+			>
 				<div className="h-8 w-8 rounded-md bg-[#f8f3e7] flex items-center justify-center text-[#c28b3b] font-semibold">
 					Q
 				</div>
-				<div>
+				<div className="sidebar-text">
 					<div className="font-medium text-[#333]">Quibe</div>
 					<div className="text-xs text-[#888]">Not a test. Just a vibe 🔥</div>
 				</div>
@@ -148,7 +151,7 @@ function Header() {
 	);
 }
 
-function UserProfile() {
+function UserProfile({ expanded }: { expanded: boolean }) {
 	const user = useAuthStore((state) => state.user);
 	const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 	const clearAuth = useAuthStore((state) => state.clearAuth);
@@ -170,66 +173,76 @@ function UserProfile() {
 	};
 
 	return (
-		<div className="mt-auto pt-4 border-t border-[#eaeaea]">
-			<div className="flex items-center justify-between p-2">
-				<div className="flex items-center gap-2">
+		<div
+			className={`mt-auto pt-4 border-t border-[#eaeaea] ${expanded ? "" : "flex flex-col items-center"}`}
+		>
+			{expanded ? (
+				<div className="flex items-center justify-between p-2">
+					<div className="flex items-center gap-2">
+						<span className="relative flex shrink-0 overflow-hidden rounded-full h-8 w-8 bg-[#f0f0f0] items-center justify-center text-[#666] font-medium">
+							{isAuthenticated ? getInitials(user.name) : "?"}
+						</span>
+						<div>
+							<div className="text-sm font-medium text-[#333]">
+								{isAuthenticated ? user.name : "Guest User"}
+							</div>
+							<div className="text-xs text-[#888]">
+								{isAuthenticated ? user.email : "Not logged in"}
+							</div>
+						</div>
+					</div>
+					<button
+						type="button"
+						className="text-[#888] hover:text-[#333] self-center"
+						onClick={
+							isAuthenticated ? handleLogout : () => navigate({ to: "/login" })
+						}
+						title={isAuthenticated ? "Logout" : "Login"}
+					>
+						{isAuthenticated ? (
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								aria-hidden="true"
+							>
+								<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+								<polyline points="16 17 21 12 16 7" />
+								<line x1="21" y1="12" x2="9" y2="12" />
+							</svg>
+						) : (
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								aria-hidden="true"
+							>
+								<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+								<polyline points="10 17 15 12 10 7" />
+								<line x1="15" y1="12" x2="3" y2="12" />
+							</svg>
+						)}
+					</button>
+				</div>
+			) : (
+				<div className="flex flex-col items-center py-4">
 					<span className="relative flex shrink-0 overflow-hidden rounded-full h-8 w-8 bg-[#f0f0f0] items-center justify-center text-[#666] font-medium">
 						{isAuthenticated ? getInitials(user.name) : "?"}
 					</span>
-					<div>
-						<div className="text-sm font-medium text-[#333]">
-							{isAuthenticated ? user.name : "Guest User"}
-						</div>
-						<div className="text-xs text-[#888]">
-							{isAuthenticated ? user.email : "Not logged in"}
-						</div>
-					</div>
 				</div>
-				<button
-					type="button"
-					className="text-[#888] hover:text-[#333]"
-					onClick={
-						isAuthenticated ? handleLogout : () => navigate({ to: "/login" })
-					}
-					title={isAuthenticated ? "Logout" : "Login"}
-				>
-					{isAuthenticated ? (
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="18"
-							height="18"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							aria-hidden="true"
-						>
-							<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-							<polyline points="16 17 21 12 16 7" />
-							<line x1="21" y1="12" x2="9" y2="12" />
-						</svg>
-					) : (
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="18"
-							height="18"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							aria-hidden="true"
-						>
-							<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-							<polyline points="10 17 15 12 10 7" />
-							<line x1="15" y1="12" x2="3" y2="12" />
-						</svg>
-					)}
-				</button>
-			</div>
+			)}
 		</div>
 	);
 }
@@ -241,15 +254,20 @@ type NavSectionProps = {
 		label: string;
 		icon: ReactNode;
 	}>;
+	expanded?: boolean;
 };
 
-function NavSection({ title, items }: NavSectionProps) {
+function NavSection({ title, items, expanded = false }: NavSectionProps) {
 	return (
 		<div className={title ? "mt-8" : ""}>
 			{title && (
-				<div className="text-xs font-medium text-[#888] px-3 mb-2">{title}</div>
+				<div className="text-xs font-medium text-[#888] px-3 mb-2 sidebar-text">
+					{title}
+				</div>
 			)}
-			<nav className="space-y-1">
+			<nav
+				className={`space-y-1 ${expanded ? "" : "flex flex-col items-center"}`}
+			>
 				{items.map((item) => (
 					<NavLink key={item.label} to={item.to} icon={item.icon}>
 						{item.label}
@@ -261,11 +279,73 @@ function NavSection({ title, items }: NavSectionProps) {
 }
 
 export function Sidebar() {
+	const [expanded, setExpanded] = useState(false);
+
+	// 화면이 좁아졌을 때 자동으로 접힘
+	useEffect(() => {
+		const media = window.matchMedia("(max-width: 768px)");
+		const handleResize = () => {
+			if (media.matches) {
+				setExpanded(false);
+			} else {
+				setExpanded(true);
+			}
+		};
+		handleResize(); // mount 시 체크
+		media.addEventListener("change", handleResize);
+		return () => media.removeEventListener("change", handleResize);
+	}, []);
+
+	// Add CSS for sidebar text visibility
+	const sidebarStyles = `
+		.sidebar-text {
+			display: ${expanded ? "block" : "none"};
+		}
+	`;
+
+	// 사이드바 토글 버튼 (오른쪽 가장자리)
+	const ToggleButton = (
+		<button
+			type="button"
+			onClick={() => setExpanded((prev) => !prev)}
+			className="absolute top-1/2 -right-3 transform -translate-y-1/2 bg-white border border-[#eaeaea] rounded-full p-1 shadow-sm hover:shadow-md transition-all z-10"
+			aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				strokeWidth="2"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				className="lucide lucide-chevron-right h-4 w-4 text-[#888]"
+				aria-hidden="true"
+			>
+				{expanded ? <path d="m15 18-6-6 6-6" /> : <path d="m9 18 6-6-6-6" />}
+			</svg>
+		</button>
+	);
+
 	return (
-		<div className="w-[240px] bg-white border-r border-[#eaeaea] p-4 flex flex-col h-screen">
-			<Header />
-			<NavSection items={mainNavItems} />
-			<UserProfile />
+		<div className="relative">
+			<style>{sidebarStyles}</style>
+			{/* Sidebar 본체 + 토글 버튼 */}
+			<div
+				className={`
+					h-screen bg-white border-r border-[#eaeaea] p-4 flex flex-col relative
+					transition-all duration-300 ease-in-out
+					${expanded ? "w-[240px]" : "w-[70px]"}
+				`}
+			>
+				<Header expanded={expanded} />
+				<NavSection items={mainNavItems} expanded={expanded} />
+				<UserProfile expanded={expanded} />
+				{/* 토글 버튼 */}
+				{ToggleButton}
+			</div>
 		</div>
 	);
 }
