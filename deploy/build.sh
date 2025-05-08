@@ -10,12 +10,9 @@ IMAGE_TAG=${IMAGE_TAG:-$(git rev-parse --short HEAD)}
 
 echo "Building image: ${DOCKER_REGISTRY}/chatalgo:${IMAGE_TAG}"
 
-docker build -t ${DOCKER_REGISTRY}/chatalgo:${IMAGE_TAG} .
+docker buildx build --platform linux/amd64,linux/arm64 -t ${DOCKER_REGISTRY}/chatalgo:${IMAGE_TAG} --push .
 
-echo "Pushing image to registry..."
-docker push ${DOCKER_REGISTRY}/chatalgo:${IMAGE_TAG}
-
-echo "Image successfully pushed: ${DOCKER_REGISTRY}/chatalgo:${IMAGE_TAG}"
+echo "Image successfully built and pushed: ${DOCKER_REGISTRY}/chatalgo:${IMAGE_TAG}"
 
 echo "Generating deployment manifest..."
 cat deploy/deployment.yaml | \
