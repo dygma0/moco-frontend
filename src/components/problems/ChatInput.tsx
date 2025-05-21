@@ -26,8 +26,10 @@ export function ChatInput({
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
-		// Submit on Ctrl+Enter or Cmd+Enter
-		if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+		if (e.key === "Enter" && !e.shiftKey) {
+			e.preventDefault();
+			handleSubmit(e);
+		} else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
 			handleSubmit(e);
 		}
 	};
@@ -55,7 +57,7 @@ export function ChatInput({
 						lang={disabled ? "ko" : undefined}
 					/>
 					<span id="message-input-help" className="sr-only">
-						Press Ctrl+Enter or Cmd+Enter to send your message.{" "}
+						Press Enter to send your message. Use Shift+Enter for a new line.{" "}
 						{disabled && "Chat is currently disabled."}
 					</span>
 					<button
