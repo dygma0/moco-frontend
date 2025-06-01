@@ -24,14 +24,14 @@ export function ProblemRow({
         : "danger";
 
   return (
-    <tr className="border-b border-[#eaeaea] hover:bg-[#f9fafb] transition-colors">
-      <Link
-        to="/problems/$id"
-        params={{ id }}
-        className="contents group"
-        aria-label={`View problem ${title}`}
-      >
-        <td className="px-4 py-3 cursor-pointer">
+    <Link
+      to="/problems/$id"
+      params={{ id }}
+      className="contents group"
+      aria-label={`View problem ${title}`}
+    >
+      <tr className="border-b border-[#eaeaea] hover:bg-[#f9fafb] transition-colors cursor-pointer">
+        <td className="px-4 py-3">
           <span className="flex items-center">
             <span className="text-sm font-medium text-[#333] group-hover:text-[#c28b3b]">
               {title}
@@ -47,29 +47,29 @@ export function ProblemRow({
             )}
           </span>
         </td>
-      </Link>
-      <td className="px-4 py-3 text-sm">
-        <Badge
-          variant={difficultyVariant}
-          aria-label={`Difficulty level: ${difficulty}`}
-        >
-          {difficulty}
-        </Badge>
-      </td>
-      <td className="px-4 py-3">
-        <ul
-          className="flex flex-wrap gap-1 list-none p-0 m-0"
-          aria-label="Problem tags"
-        >
-          {tags.map((tag) => (
-            <li key={tag}>
-              <Badge variant="default" aria-label={`Tag: ${tag}`}>
-                {tag}
-              </Badge>
-            </li>
-          ))}
-        </ul>
-      </td>
-    </tr>
+        <td className="px-4 py-3 text-sm">
+          <Badge
+            variant={difficultyVariant}
+            aria-label={`Difficulty level: ${difficulty}`}
+          >
+            {difficulty}
+          </Badge>
+        </td>
+        <td className="px-4 py-3">
+          <ul
+            className="flex flex-wrap gap-1 list-none p-0 m-0"
+            aria-label="Problem tags"
+          >
+            {tags.map((tag) => (
+              <li key={tag}>
+                <Badge variant="default" aria-label={`Tag: ${tag}`}>
+                  {tag}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </td>
+      </tr>
+    </Link>
   );
 }
