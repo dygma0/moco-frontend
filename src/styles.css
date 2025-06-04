@@ -15,7 +15,9 @@
   & h3 {
     @apply text-base font-bold mt-3 mb-1;
   }
-  & h4, & h5, & h6 {
+  & h4,
+  & h5,
+  & h6 {
     @apply font-bold mt-2 mb-1;
   }
 
@@ -25,7 +27,8 @@
   }
 
   /* Lists */
-  & ul, & ol {
+  & ul,
+  & ol {
     @apply pl-5 my-2;
   }
   & ul {
@@ -62,7 +65,8 @@
   & table {
     @apply w-full border-collapse my-3;
   }
-  & th, & td {
+  & th,
+  & td {
     @apply border border-gray-300 px-2 py-1;
   }
   & th {

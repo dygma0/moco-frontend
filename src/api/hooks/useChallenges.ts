@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { challengesApi, type ChallengesListResponse } from "../challenges";
+import { type ChallengesListResponse, challengesApi } from "../challenges";
 
 /**
  * Hook for fetching a list of challenges with pagination
@@ -11,16 +11,16 @@ import { challengesApi, type ChallengesListResponse } from "../challenges";
  * @returns A query object with the list of challenges and pagination info
  */
 export function useChallenges(
-	page = 0,
-	size = 10,
-	search?: string,
-	difficulty?: string,
-	tag?: string,
+  page = 0,
+  size = 10,
+  search?: string,
+  difficulty?: string,
+  tag?: string,
 ) {
-	return useQuery<ChallengesListResponse, Error>({
-		queryKey: ["challenges", page, size, search, difficulty, tag],
-		queryFn: () =>
-			challengesApi.getChallenges(page, size, search, difficulty, tag),
-		placeholderData: (keepPreviousData) => keepPreviousData,
-	});
+  return useQuery<ChallengesListResponse, Error>({
+    queryKey: ["challenges", page, size, search, difficulty, tag],
+    queryFn: () =>
+      challengesApi.getChallenges(page, size, search, difficulty, tag),
+    placeholderData: (keepPreviousData) => keepPreviousData,
+  });
 }

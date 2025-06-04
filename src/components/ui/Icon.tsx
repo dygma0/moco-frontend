@@ -1,17 +1,17 @@
-import { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
 interface IconProps {
-  id: string
-  title: string
-  children: ReactNode
-  size?: number
-  className?: string
-  stroke?: string
-  strokeWidth?: number
+  id: string;
+  title: string;
+  children: ReactNode;
+  size?: number;
+  className?: string;
+  stroke?: string;
+  strokeWidth?: number;
   /**
    * Whether the icon is decorative only (true) or meaningful (false)
    */
-  decorative?: boolean
+  decorative?: boolean;
 }
 
 export function Icon({
@@ -22,7 +22,7 @@ export function Icon({
   className = "text-[#888]",
   stroke = "currentColor",
   strokeWidth = 2,
-  decorative = false
+  decorative = false,
 }: IconProps) {
   return (
     <span className={className}>
@@ -44,5 +44,5 @@ export function Icon({
         {children}
       </svg>
     </span>
-  )
+  );
 }

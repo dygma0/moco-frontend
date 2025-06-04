@@ -7,9 +7,9 @@ import { type ChallengeResponse, challengesApi } from "../challenges";
  * @returns A query object with challenge details
  */
 export function useChallenge(id: string) {
-	return useQuery<ChallengeResponse, Error>({
-		queryKey: ["challenge", id],
-		queryFn: () => challengesApi.getChallenge(id),
-		enabled: !!id,
-	});
+  return useQuery<ChallengeResponse, Error>({
+    queryKey: ["challenge", id],
+    queryFn: () => challengesApi.getChallenge(id),
+    enabled: !!id,
+  });
 }

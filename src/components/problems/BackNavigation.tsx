@@ -8,8 +8,8 @@ interface BackNavigationProps {
 export function BackNavigation({ href, text }: BackNavigationProps) {
   return (
     <nav className="mb-6" aria-label="Back navigation">
-      <a 
-        className="inline-flex items-center text-sm text-[#666] hover:text-[#c28b3b]" 
+      <a
+        className="inline-flex items-center text-sm text-[#666] hover:text-[#c28b3b]"
         href={href}
         aria-label={`Navigate back to ${text}`}
       >

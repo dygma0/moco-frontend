@@ -10,111 +10,111 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as SignupIndexImport } from './routes/signup/index'
-import { Route as ProblemsIndexImport } from './routes/problems/index'
-import { Route as LoginIndexImport } from './routes/login/index'
-import { Route as ProblemsIdImport } from './routes/problems/$id'
+import { Route as rootRoute } from "./routes/__root";
+import { Route as LoginIndexImport } from "./routes/login/index";
+import { Route as ProblemsIdImport } from "./routes/problems/$id";
+import { Route as ProblemsIndexImport } from "./routes/problems/index";
+import { Route as SignupIndexImport } from "./routes/signup/index";
 
 // Create/Update Routes
 
 const SignupIndexRoute = SignupIndexImport.update({
-  id: '/signup/',
-  path: '/signup/',
+  id: "/signup/",
+  path: "/signup/",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const ProblemsIndexRoute = ProblemsIndexImport.update({
-  id: '/problems/',
-  path: '/problems/',
+  id: "/problems/",
+  path: "/problems/",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const LoginIndexRoute = LoginIndexImport.update({
-  id: '/login/',
-  path: '/login/',
+  id: "/login/",
+  path: "/login/",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const ProblemsIdRoute = ProblemsIdImport.update({
-  id: '/problems/$id',
-  path: '/problems/$id',
+  id: "/problems/$id",
+  path: "/problems/$id",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 // Populate the FileRoutesByPath interface
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/problems/$id': {
-      id: '/problems/$id'
-      path: '/problems/$id'
-      fullPath: '/problems/$id'
-      preLoaderRoute: typeof ProblemsIdImport
-      parentRoute: typeof rootRoute
-    }
-    '/login/': {
-      id: '/login/'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/problems/': {
-      id: '/problems/'
-      path: '/problems'
-      fullPath: '/problems'
-      preLoaderRoute: typeof ProblemsIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/signup/': {
-      id: '/signup/'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupIndexImport
-      parentRoute: typeof rootRoute
-    }
+    "/problems/$id": {
+      id: "/problems/$id";
+      path: "/problems/$id";
+      fullPath: "/problems/$id";
+      preLoaderRoute: typeof ProblemsIdImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/login/": {
+      id: "/login/";
+      path: "/login";
+      fullPath: "/login";
+      preLoaderRoute: typeof LoginIndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/problems/": {
+      id: "/problems/";
+      path: "/problems";
+      fullPath: "/problems";
+      preLoaderRoute: typeof ProblemsIndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/signup/": {
+      id: "/signup/";
+      path: "/signup";
+      fullPath: "/signup";
+      preLoaderRoute: typeof SignupIndexImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/problems/$id': typeof ProblemsIdRoute
-  '/login': typeof LoginIndexRoute
-  '/problems': typeof ProblemsIndexRoute
-  '/signup': typeof SignupIndexRoute
+  "/problems/$id": typeof ProblemsIdRoute;
+  "/login": typeof LoginIndexRoute;
+  "/problems": typeof ProblemsIndexRoute;
+  "/signup": typeof SignupIndexRoute;
 }
 
 export interface FileRoutesByTo {
-  '/problems/$id': typeof ProblemsIdRoute
-  '/login': typeof LoginIndexRoute
-  '/problems': typeof ProblemsIndexRoute
-  '/signup': typeof SignupIndexRoute
+  "/problems/$id": typeof ProblemsIdRoute;
+  "/login": typeof LoginIndexRoute;
+  "/problems": typeof ProblemsIndexRoute;
+  "/signup": typeof SignupIndexRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/problems/$id': typeof ProblemsIdRoute
-  '/login/': typeof LoginIndexRoute
-  '/problems/': typeof ProblemsIndexRoute
-  '/signup/': typeof SignupIndexRoute
+  __root__: typeof rootRoute;
+  "/problems/$id": typeof ProblemsIdRoute;
+  "/login/": typeof LoginIndexRoute;
+  "/problems/": typeof ProblemsIndexRoute;
+  "/signup/": typeof SignupIndexRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/problems/$id' | '/login' | '/problems' | '/signup'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/problems/$id' | '/login' | '/problems' | '/signup'
-  id: '__root__' | '/problems/$id' | '/login/' | '/problems/' | '/signup/'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: "/problems/$id" | "/login" | "/problems" | "/signup";
+  fileRoutesByTo: FileRoutesByTo;
+  to: "/problems/$id" | "/login" | "/problems" | "/signup";
+  id: "__root__" | "/problems/$id" | "/login/" | "/problems/" | "/signup/";
+  fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  ProblemsIdRoute: typeof ProblemsIdRoute
-  LoginIndexRoute: typeof LoginIndexRoute
-  ProblemsIndexRoute: typeof ProblemsIndexRoute
-  SignupIndexRoute: typeof SignupIndexRoute
+  ProblemsIdRoute: typeof ProblemsIdRoute;
+  LoginIndexRoute: typeof LoginIndexRoute;
+  ProblemsIndexRoute: typeof ProblemsIndexRoute;
+  SignupIndexRoute: typeof SignupIndexRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -122,11 +122,11 @@ const rootRouteChildren: RootRouteChildren = {
   LoginIndexRoute: LoginIndexRoute,
   ProblemsIndexRoute: ProblemsIndexRoute,
   SignupIndexRoute: SignupIndexRoute,
-}
+};
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {
